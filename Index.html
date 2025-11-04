@@ -1,0 +1,1915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTech Nexus - 3D Tech Website</title>
+    
+    <!-- 1. Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. three.js Library --><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        // 3. Custom Tailwind Configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'cyan': {
+                            '500': '#06b6d4',
+                            '400': '#22d3ee',
+                        }
+                    },
+                    boxShadow: {
+                        'cyan-glow': '0 4px 30px rgba(6, 182, 212, 0.4)',
+                        'cyan-glow-lg': '0 10px 40px rgba(6, 182, 212, 0.5)',
+                        'purple-glow': '0 0 50px rgba(139, 92, 246, 0.6), 0 0 80px rgba(124, 58, 237, 0.4)',
+                    }
+                },
+            },
+        };
+    </script>
+
+    <style>
+        /* 4. Custom CSS for base styles and the canvas */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            cursor: auto; /* Use the browser's default cursor */
+        }
+        
+        /* --- Ensure interactive elements still show a pointer --- */
+        a:hover, button:hover, .card-3d:hover, .career-card:hover, .social-icon:hover {
+            cursor: pointer;
+        }
+        
+        /* --- Custom rule for Hero text --- */
+        main.container h1, main.container p {
+            cursor: default; /* Change back to default text cursor for hero text */
+        }
+
+        /* This container holds the 3D canvas and fixes it to the background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0; /* Behind the content */
+            background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+        }
+
+        /* This wrapper holds the scrollable HTML content on top */
+        /* All content "pages" will share this relative z-index */
+        #content-wrapper, #internships-page, #careers-page, #contact-us-page, #privacy-policy-page {
+            position: relative;
+            z-index: 1; /* In front of the canvas */
+            width: 100%;
+        }
+
+        /* Glassmorphism effect for cards */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.7); /* bg-slate-900 with 70% opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.3); /* border-slate-700 with 30% opacity */
+        }
+
+        /* --- New Career Card Style --- */
+        .career-card {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .career-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.5); /* cyan-glow-lg */
+        }
+        .career-card img {
+            border-top-left-radius: 1rem; /* 1rem = rounded-2xl */
+            border-top-right-radius: 1rem;
+            object-fit: cover;
+            aspect-ratio: 16 / 9;
+        }
+
+        /* --- CSS for 3D Interactive Cards --- */
+        
+        /* This parent applies the 3D perspective to its children */
+        .scene-3d {
+            perspective: 1000px;
+        }
+
+        /* This is the card that will transform in 3D */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* On hover, rotate the card for a 3D interactive effect */
+        .card-3d:hover {
+            transform: rotateY(10deg) rotateX(5deg) scale(1.05);
+            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.5); /* Use cyan-glow-lg */
+        }
+
+        /* --- MODAL: Verification Modal Styles --- */
+        #verification-modal-overlay {
+            position: fixed;
+            inset: 0; /* (top/left/right/bottom = 0) */
+            background: rgba(15, 23, 42, 0.6); /* bg-slate-900 with 60% opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        #verification-modal {
+            transform-style: preserve-3d;
+            transform: scale(1) rotateY(0deg);
+            opacity: 1;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; /* For the close button */
+        }
+
+        /* 3D "Hidden" state */
+        #verification-modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Don't intercept clicks when hidden */
+        }
+        #verification-modal-overlay.hidden #verification-modal {
+            transform: scale(0.7) rotateY(60deg) translateX(200px);
+            opacity: 0;
+        }
+
+        /* Viewport for the 3D robot inside the modal */
+        #robot-viewport {
+            width: 100%;
+            height: 200px; /* Set a fixed height for the canvas */
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            overflow: hidden; /* Ensure canvas stays contained */
+        }
+
+        /* Style for the input field */
+        .tech-input {
+            background-color: #1e293b; /* bg-slate-800 */
+            border: 1px solid #334155; /* border-slate-700 */
+            color: #f1f5f9; /* text-slate-100 */
+            width: 100%;
+            padding: 0.75rem 1rem; /* px-4 py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .tech-input::placeholder {
+            color: #64748b; /* text-slate-500 */
+        }
+        .tech-input:focus {
+            outline: none;
+            border-color: #06b6d4; /* border-cyan-500 */
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.4);
+        }
+
+        /* --- RESTORED: Social Connect Icons (for Contact page) --- */
+        .social-icon {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          position: relative;
+          z-index: 1;
+        }
+        
+        .icon-container {
+          display: inline-flex;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+          position: relative;
+          justify-content: center;
+          align-items: center;
+          background: rgba(255, 255, 255, 0.05);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-icon:hover .icon-container {
+          transform: translateY(-10px) scale(1.1);
+        }
+        
+        .social-icon:hover .icon-label {
+          opacity: 1;
+          transform: translateY(5px);
+          color: #fff; /* Make label white on hover */
+        }
+        
+        .icon-label {
+          margin-top: 12px;
+          color: #94a3b8; /* text-slate-400 */
+          font-weight: 500;
+          opacity: 0.8;
+          transition: all 0.3s ease;
+        }
+        
+        /* Colorful hover effects */
+        .social-icon.instagram:hover .icon-container {
+          background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+          box-shadow: 0 0 20px rgba(225, 48, 108, 0.6);
+        }
+        
+        .social-icon.telegram:hover .icon-container {
+          background: #229ED9;
+          box-shadow: 0 0 20px rgba(34, 158, 217, 0.6);
+        }
+        
+        .social-icon.email:hover .icon-container {
+          background: #D44638;
+          box-shadow: 0 0 20px rgba(212, 70, 56, 0.6);
+        }
+        
+        .social-icon.linkedin:hover .icon-container {
+          background: #0077b5;
+          box-shadow: 0 0 20px rgba(0, 119, 181, 0.6);
+        }
+
+        .social-icon.whatsapp:hover .icon-container {
+          background: #25D366;
+          box-shadow: 0 0 20px rgba(37, 211, 102, 0.6);
+        }
+        
+        /* Shake animation */
+        .social-icon:hover svg {
+          animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0) rotate(0); }
+          20% { transform: translateX(-5px) rotate(-5deg); }
+          40% { transform: translateX(5px) rotate(5deg); }
+          60% { transform: translateX(-5px) rotate(-5deg); }
+          80% { transform: translateX(5px) rotate(5deg); }
+        }
+        
+        /* Inner glow effect */
+        .icon-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle at center, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: -1;
+        }
+        
+        .social-icon:hover .icon-container::before {
+          opacity: 1;
+        }
+
+        /* --- NEW: Privacy Policy Page Styles --- */
+        #privacy-policy-page .privacy-content {
+            background: rgba(15, 23, 42, 0.7); /* bg-slate-900 with 70% opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(51, 65, 85, 0.3); /* border-slate-700 with 30% opacity */
+            border-radius: 1rem; /* rounded-2xl */
+            padding: 2rem; /* p-8 */
+            margin-top: 2rem; /* mt-8 */
+        }
+        #privacy-policy-page .privacy-content h2 {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #fff; /* text-white */
+            margin-bottom: 1rem; /* mb-4 */
+            padding-bottom: 0.5rem; /* pb-2 */
+            border-bottom: 1px solid #334155; /* border-b border-slate-700 */
+        }
+        #privacy-policy-page .privacy-content h3 {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+            color: #fff; /* text-white */
+            margin-top: 1.5rem; /* mt-6 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        #privacy-policy-page .privacy-content p {
+            color: #cbd5e1; /* text-slate-300 */
+            line-height: 1.75; /* leading-relaxed */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        #privacy-policy-page .privacy-content ul {
+            color: #cbd5e1; /* text-slate-300 */
+            list-style-position: inside;
+            list-style-type: disc;
+            margin-left: 0.5rem; /* ml-2 */
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        #privacy-policy-page .privacy-content li {
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        #privacy-policy-page .privacy-content a {
+            color: #22d3ee; /* text-cyan-400 */
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-gray-100">
+
+    <!-- This div will hold the 3D scene --><div id="canvas-container"></div>
+
+    <!-- #################################### -->
+    <!-- ###     MAIN CONTENT WRAPPER     ### -->
+    <!-- #################################### -->
+    <div id="content-wrapper">
+        
+        <!-- Header --><header class="py-6 px-4 md:px-8">
+            <nav class="container mx-auto flex justify-between items-center">
+                <div class="text-2xl font-bold text-white">
+                    <span class="text-cyan-400">Cyber</span>Tech
+                </div>
+                <!-- ### HEADER NAVIGATION EDITED HERE ### -->
+                <div class="hidden md:flex space-x-6 text-gray-300">
+                    <a href="#home" id="nav-home" class="hover:text-cyan-400 transition-colors duration-300">Home</a>
+                    <a href="#internships" id="nav-internships" class="hover:text-cyan-400 transition-colors duration-300">Internships</a>
+                    <a href="#careers" id="nav-careers" class="hover:text-cyan-400 transition-colors duration-300">Careers</a>
+                    <!-- Added ID for Verification Link -->
+                    <a href="#" id="nav-verification" class="hover:text-cyan-400 transition-colors duration-300">Verification</a>
+                    <a href="#contact-us" id="nav-contact-us" class="hover:text-cyan-400 transition-colors duration-300">Contact Us</a>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section --><main class="container mx-auto px-4 py-24 md:py-32 text-center">
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-4">
+                Welcome to the <span class="text-cyan-400">Future</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
+                Exploring the cutting edge of 3D, technology, and robotics.
+            </p>
+            <button class="bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
+                            transform transition-all duration-300 ease-in-out
+                            hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
+                Get Started
+            </button>
+        </main>
+
+        <!-- "Featured Technology" Section --><section class="container mx-auto px-4 py-16">
+            <h2 class="text-3xl font-bold text-center text-white mb-12">Featured Technology</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 --><div class="glass-card p-8 rounded-2xl shadow-xl
+                                transform transition-all duration-300 ease-in-out
+                                hover:scale-105 hover:shadow-cyan-glow">
+                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">Autonomous Robots</h3>
+                    <p class="text-gray-300">
+                        Advanced robotics systems capable of learning and adapting to their environment.
+                    </p>
+                </div>
+                <!-- Card 2 --><div class="glass-card p-8 rounded-2xl shadow-xl
+                                transform transition-all duration-300 ease-in-out
+                                hover:scale-105 hover:shadow-cyan-glow">
+                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">Neural AI Core</h3>
+                    <p class="text-gray-300">
+                        Our central AI core processes petabytes of data for predictive analytics.
+                    </p>
+                </div>
+                <!-- Card 3 --><div class="glass-card p-8 rounded-2xl shadow-xl
+                                transform transition-all duration-300 ease-in-out
+                                hover:scale-105 hover:shadow-cyan-glow">
+                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">3D Holo-Display</h3>
+                    <p class="text-gray-300">
+                        Interactive holographic technology that brings digital models into the real world.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- Top Internship Programs Section (3 boxes) --- --><section class="container mx-auto px-4 pt-16">
+            <h2 class="text-3xl font-bold text-center text-white mb-12">Top Internship Programs</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Internship Card 1: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">AI Division</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Robotics Engineering Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Design, build, and test next-generation autonomous systems.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 2: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">3D Simulation Lab</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Virtual Worlds Designer</h3>
+                            <p class="text-gray-300 mb-6">
+                                Create photorealistic 3D environments for AI training and visualization.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 3: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">Data Science</span>
+                            <h3 class="text-2xl font-bold text-white my-3">AI & ML Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Analyze complex datasets from our neural core to build predictive models.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- Internships We Offer Section (6 boxes) --- --><section class="container mx-auto px-4 py-16">
+            <h2 class="text-3xl font-bold text-center text-white mb-12">Internships We Offer</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Internship Card 1: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">AI Division</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Robotics Engineering Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Design, build, and test next-generation autonomous systems.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 2: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">3D Simulation Lab</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Virtual Worlds Designer</h3>
+                            <p class="text-gray-300 mb-6">
+                                Create photorealistic 3D environments for AI training and visualization.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 3: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">Data Science</span>
+                            <h3 class="text-2xl font-bold text-white my-3">AI & ML Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Analyze complex datasets from our neural core to build predictive models.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 4: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">Cybersecurity</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Threat Analyst Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Monitor network traffic and identify potential security threats in real-time.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Internship Card 5: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">Hardware R&D</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Quantum Computing Intern</h3>
+                            <p class="text-gray-300 mb-6">
+                                Assist researchers in developing and testing experimental quantum processors.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Internship Card 6: 3D Box --><div class="scene-3d">
+                    <div class="card-3d glass-card p-8 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-semibold text-cyan-400 uppercase">UX/UI Design</span>
+                            <h3 class="text-2xl font-bold text-white my-3">Holo-Interface Designer</h3>
+                            <p class="text-gray-300 mb-6">
+                                Design intuitive 3D user interfaces for our holographic display technology.
+                            </p>
+                        </div>
+                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                                        transform transition-all duration-300
+                                        hover:bg-slate-600 hover:text-cyan-200">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- --- "View All" Button --- --><div class="text-center mt-12">
+                <!-- ID fixed here -->
+                <button id="view-all-internships-btn" class="bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
+                                        transform transition-all duration-300 ease-in-out
+                                        hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
+                    View All 20 Programs
+                </button>
+            </div>
+        </section>
+
+
+        <!-- --- Career Options Section (3 boxes) --- --><section class="container mx-auto px-4 py-16">
+            <h2 class="text-3xl font-bold text-center text-white mb-12">Explore Career Paths</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Career Card 1 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://placehold.co/400x225/0f172a/94a3b8?text=Data+Analyst" alt="Data Analyst" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/94a3b8?text=Image+Error'">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Data Analyst</h3>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            Collects, cleans, and interprets data to help organizations make better decisions.
+                        </p>
+                        <div class="text-sm">
+                            <p class="text-gray-400">Median Salary: <span class="font-semibold text-gray-200">$90,000</span></p>
+                            <p class="text-gray-400">Jobs Available: <span class="font-semibold text-gray-200">25,000+</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Career Card 2 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Cybersecurity" alt="Cybersecurity Analyst" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Cybersecurity Analyst</h3>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            Protects networks and systems from cyber threats and security breaches.
+                        </p>
+                        <div class="text-sm">
+                            <p class="text-gray-400">Median Salary: <span class="font-semibold text-gray-200">$110,000</span></p>
+                            <p class="text-gray-400">Jobs Available: <span class="font-semibold text-gray-200">18,000+</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Career Card 3 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <!-- *** FIXED 'src' TYPO HERE *** -->
+                    <img src="httpsStorage" alt="Machine Learning Engineer" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/ffffff?text=Image+Error'">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">ML Engineer</h3>
+                        <p class="text-gray-300 mb-4 text-sm">
+                            Designs and builds self-learning AI models for complex problem-solving.
+                        </p>
+                        <div class="text-sm">
+                            <p class="text-gray-400">Median Salary: <span class="font-semibold text-gray-200">$130,000</span></p>
+                            <p class="text-gray-400">Jobs Available: <span class="font-semibold text-gray-200">12,000+</span></p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- --- "View All" Button --- --><div class="text-center mt-12">
+                <button id="view-all-careers-btn" class="bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
+                                        transform transition-all duration-300 ease-in-out
+                                        hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
+                    Explore All Careers
+                </button>
+            </div>
+        </section>
+
+
+        <!-- --- NEW: Refined Footer --- -->
+        <footer class="mt-24">
+            <div class="glass-card container mx-auto rounded-t-2xl p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Column 1: Brand -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                           <span class="text-cyan-400">Cyber</span>Tech
+                        </h3>
+                        <p class="text-gray-400 max-w-sm">
+                            Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: Explore Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Explore</h4>
+                        <!-- *** UPDATED FOOTER LINKS *** -->
+                        <ul class="space-y-2">
+                            <li><a href="#home" id="footer-main-home" class="text-gray-400 hover:text-cyan-400 transition-colors">Home</a></li>
+                            <li><a href="#" id="footer-main-verification" class="text-gray-400 hover:text-cyan-400 transition-colors">Verification</a></li>
+                            <li><a href="#internships" id="footer-main-internships" class="text-gray-400 hover:text-cyan-400 transition-colors">Internships</a></li>
+                            <li><a href="#careers" id="footer-main-careers" class="text-gray-400 hover:text-cyan-400 transition-colors">Careers</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Company Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#contact-us" id="footer-main-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
+                            <li><a href="#privacy-policy" id="footer-main-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="border-t border-slate-700 my-8"/>
+
+                <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
+                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <!-- Social Icons (SVG Placeholders) -->
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.75,5.9 11.75,8.25C11.75,8.58 11.79,8.92 11.86,9.24C8.28,9.06 5.1,7.38 2.9,4.79C2.53,5.42 2.36,6.16 2.36,6.93C2.36,8.47 3.11,9.85 4.17,10.69C3.49,10.67 2.86,10.49 2.3,10.2C2.3,10.22 2.3,10.24 2.3,10.26C2.3,12.4 3.86,14.18 5.88,14.58C5.5,14.68 5.1,14.71 4.7,14.71C4.42,14.71 4.15,14.68 3.89,14.63C4.46,16.34 6.08,17.56 8.1,17.6C6.55,18.81 4.67,19.53 2.63,19.53C2.27,19.53 1.91,19.51 1.56,19.46C3.61,20.81 6.04,21.66 8.7,21.66C16.01,21.66 20.24,15.68 20.24,10.3C20.24,10.13 20.24,9.96 20.23,9.79C20.97,9.26 21.66,8.61 22.2,7.86C21.49,8.19 20.73,8.42 19.92,8.53C20.7,8.03 21.3,7.2 21.58,6.24C21.51,6.17 22.46,6 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22,12C22,6.48 17.52,2 12,2S2,6.48 2,12C2,16.85 5.64,20.79 10.21,21.82V14.16H7.3V12H10.21V9.92C10.21,7.03 12,5.34 14.65,5.34C15.95,5.34 17.28,5.55 17.28,5.55V8.13H15.9C14.5,8.13 14.12,9.1 14.12,9.92V12H17.1L16.63,14.16H14.12V21.82C18.36,20.79 22,16.85 22,12Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.8,14.5 12,14.5C10.2,14.5 7.07,15.09 5.64,16.83C4.62,15.49 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.49 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div> <!-- End of content-wrapper -->
+
+
+    <!-- ######################################## -->
+    <!-- ### "ALL INTERNSHIPS" PAGE (hidden)  ### -->
+    <!-- ######################################## -->
+    <div id="internships-page" class="hidden">
+        
+        <!-- Page Header --><header class="py-6 px-4 md:px-8">
+             <nav class="container mx-auto flex justify-between items-center relative">
+                 <!-- Back arrow on the left -->
+                 <button id="back-btn" class="text-white font-semibold p-2 rounded-lg
+                                 transform transition-all duration-300
+                                 hover:bg-slate-700 absolute left-0">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                 </button>
+                 <!-- Page title (centered) -->
+                 <div class="text-2xl font-bold text-white mx-auto">
+                     <span class="text-cyan-400">Cyber</span>Tech Internships
+                 </div>
+            </nav>
+        </header>
+
+        <!-- Page Main Content --><main class="container mx-auto px-4 py-16">
+            <h1 class="text-4xl font-bold text-center text-white mb-12">All Internship Programs (20)</h1>
+            
+            <!-- Grid for 20 items --><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Helper script to create cards. This runs when the page becomes visible. -->
+                <script>
+                    const internships = [
+                        { title: "Robotics Engineering Intern", dept: "AI Division" },
+                        { title: "Virtual Worlds Designer", dept: "3D Simulation Lab" },
+                        { title: "AI & ML Intern", dept: "Data Science" },
+                        { title: "Threat Analyst Intern", dept: "Cybersecurity" },
+                        { title: "Quantum Computing Intern", dept: "Hardware R&D" },
+                        { title: "Holo-Interface Designer", dept: "UX/UI Design" },
+                        { title: "Drone Navigation Developer", dept: "AI Division" },
+                        { title: "Neuro-Link Researcher", dept: "Bio-Tech" },
+                        { title: "AI Ethics Advisor", dept: "Data Science" },
+                        { title: "VR/AR Developer", dept: "3D Simulation Lab" },
+                        { title: "Robotic Prosthetics", dept: "Bio-Tech" },
+                        { title: "Autonomous Vehicle AI", dept: "AI Division" },
+                        { title: "Data Privacy Specialist", dept: "Cybersecurity" },
+                        { title: "Materials Scientist", dept: "Hardware R&D" },
+                        { title: "Predictive Modeler", dept: "Data Science" },
+                        { title: "Haptic Feedback R&D", dept: "UX/UI Design" },
+                        { title: "AI Language Model Dev", dept: "AI Division" },
+                        { title: "Simulation Physicist", dept: "3D Simulation Lab" },
+                        { title: "Penetration Tester", dept: "Cybersecurity" },
+                        { title: "Firmware Engineer", dept: "Hardware R&D" }
+                    ];
+
+                    const internshipGrid = document.querySelector('#internships-page .grid');
+                    
+                    if (internshipGrid) {
+                        internshipGrid.innerHTML = ''; // Clear it first
+                        internships.forEach(internship => {
+                            internshipGrid.innerHTML += `
+                            <div class="scene-3d">
+                                <div class="card-3d glass-card p-6 rounded-2xl shadow-xl h-full flex flex-col justify-between">
+                                    <div>
+                                        <span class="text-sm font-semibold text-cyan-400 uppercase">${internship.dept}</span>
+                                        <h3 class="text-xl font-bold text-white my-2">${internship.title}</h3>
+                                        <p class="text-gray-300 text-sm mb-4">
+                                            Join our team to work on cutting-edge ${internship.title.toLowerCase()} projects.
+                                        </p>
+                                    </div>
+                                    <button class="mt-4 w-full bg-cyan-500 text-white font-semibold py-2 rounded-lg
+                                                     transform transition-all duration-300
+                                                     hover:bg-cyan-400 hover:shadow-cyan-glow text-sm">
+                                        Apply Now
+                                    </button>
+                                </div>
+                            </div>
+                            `;
+                        });
+                    }
+                </script>
+                
+            </div>
+        </main>
+        
+        <!-- --- NEW: Refined Footer --- -->
+        <footer class="mt-24">
+            <div class="glass-card container mx-auto rounded-t-2xl p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Column 1: Brand -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                           <span class="text-cyan-400">Cyber</span>Tech
+                        </h3>
+                        <p class="text-gray-400 max-w-sm">
+                            Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: Explore Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Explore</h4>
+                        <!-- *** UPDATED FOOTER LINKS *** -->
+                        <ul class="space-y-2">
+                            <li><a href="#home" id="footer-int-home" class="text-gray-400 hover:text-cyan-400 transition-colors">Home</a></li>
+                            <li><a href="#" id="footer-int-verification" class="text-gray-400 hover:text-cyan-400 transition-colors">Verification</a></li>
+                            <li><a href="#internships" id="footer-int-internships" class="text-gray-400 hover:text-cyan-400 transition-colors">Internships</a></li>
+                            <li><a href="#careers" id="footer-int-careers" class="text-gray-400 hover:text-cyan-400 transition-colors">Careers</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Company Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#contact-us" id="footer-int-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
+                            <li><a href="#privacy-policy" id="footer-int-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="border-t border-slate-700 my-8"/>
+
+                <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
+                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <!-- Social Icons (SVG Placeholders) -->
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.75,5.9 11.75,8.25C11.75,8.58 11.79,8.92 11.86,9.24C8.28,9.06 5.1,7.38 2.9,4.79C2.53,5.42 2.36,6.16 2.36,6.93C2.36,8.47 3.11,9.85 4.17,10.69C3.49,10.67 2.86,10.49 2.3,10.2C2.3,10.22 2.3,10.24 2.3,10.26C2.3,12.4 3.86,14.18 5.88,14.58C5.5,14.68 5.1,14.71 4.7,14.71C4.42,14.71 4.15,14.68 3.89,14.63C4.46,16.34 6.08,17.56 8.1,17.6C6.55,18.81 4.67,19.53 2.63,19.53C2.27,19.53 1.91,19.51 1.56,19.46C3.61,20.81 6.04,21.66 8.7,21.66C16.01,21.66 20.24,15.68 20.24,10.3C20.24,10.13 20.24,9.96 20.23,9.79C20.97,9.26 21.66,8.61 22.2,7.86C21.49,8.19 20.73,8.42 19.92,8.53C20.7,8.03 21.3,7.2 21.58,6.24C21.51,6.17 22.46,6 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22,12C22,6.48 17.52,2 12,2S2,6.48 2,12C2,16.85 5.64,20.79 10.21,21.82V14.16H7.3V12H10.21V9.92C10.21,7.03 12,5.34 14.65,5.34C15.95,5.34 17.28,5.55 17.28,5.55V8.13H15.9C14.5,8.13 14.12,9.1 14.12,9.92V12H17.1L16.63,14.16H14.12V21.82C18.36,20.79 22,16.85 22,12Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.8,14.5 12,14.5C10.2,14.5 7.07,15.09 5.64,16.83C4.62,15.49 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.49 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- --- End of "All Internships" Page --- -->
+
+
+    <!-- #################################### -->
+    <!-- ### "ALL CAREERS" PAGE (hidden)    ### -->
+    <!-- #################################### -->
+    <div id="careers-page" class="hidden">
+        
+        <!-- Page Header --><header class="py-6 px-4 md:px-8">
+             <nav class="container mx-auto flex justify-between items-center relative">
+                 <!-- Back arrow on the left -->
+                 <button id="back-btn-careers" class="text-white font-semibold p-2 rounded-lg
+                                 transform transition-all duration-300
+                                 hover:bg-slate-700 absolute left-0">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                 </button>
+                 <!-- Page title (centered) -->
+                 <div class="text-2xl font-bold text-white mx-auto">
+                     <span class="text-cyan-400">Cyber</span>Tech Careers
+                 </div>
+            </nav>
+        </header>
+
+        <!-- Page Main Content --><main class="container mx-auto px-4 py-16">
+            <h1 class="text-4xl font-bold text-center text-white mb-12">All Career Paths</h1>
+            
+            <!-- Grid for 20 items - This will be populated by JavaScript --><div id="careers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Career cards will be injected here by JS -->
+            </div>
+        </main>
+        
+        <!-- --- NEW: Refined Footer --- -->
+        <footer class="mt-24">
+            <div class="glass-card container mx-auto rounded-t-2xl p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Column 1: Brand -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                           <span class="text-cyan-400">Cyber</span>Tech
+                        </h3>
+                        <p class="text-gray-400 max-w-sm">
+                            Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: Explore Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Explore</h4>
+                        <!-- *** UPDATED FOOTER LINKS *** -->
+                        <ul class="space-y-2">
+                            <li><a href="#home" id="footer-car-home" class="text-gray-400 hover:text-cyan-400 transition-colors">Home</a></li>
+                            <li><a href="#" id="footer-car-verification" class="text-gray-400 hover:text-cyan-400 transition-colors">Verification</a></li>
+                            <li><a href="#internships" id="footer-car-internships" class="text-gray-400 hover:text-cyan-400 transition-colors">Internships</a></li>
+                            <li><a href="#careers" id="footer-car-careers" class="text-gray-400 hover:text-cyan-400 transition-colors">Careers</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Company Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#contact-us" id="footer-car-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
+                            <li><a href="#privacy-policy" id="footer-car-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="border-t border-slate-700 my-8"/>
+
+                <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
+                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <!-- Social Icons (SVG Placeholders) -->
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.75,5.9 11.75,8.25C11.75,8.58 11.79,8.92 11.86,9.24C8.28,9.06 5.1,7.38 2.9,4.79C2.53,5.42 2.36,6.16 2.36,6.93C2.36,8.47 3.11,9.85 4.17,10.69C3.49,10.67 2.86,10.49 2.3,10.2C2.3,10.22 2.3,10.24 2.3,10.26C2.3,12.4 3.86,14.18 5.88,14.58C5.5,14.68 5.1,14.71 4.7,14.71C4.42,14.71 4.15,14.68 3.89,14.63C4.46,16.34 6.08,17.56 8.1,17.6C6.55,18.81 4.67,19.53 2.63,19.53C2.27,19.53 1.91,19.51 1.56,19.46C3.61,20.81 6.04,21.66 8.7,21.66C16.01,21.66 20.24,15.68 20.24,10.3C20.24,10.13 20.24,9.96 20.23,9.79C20.97,9.26 21.66,8.61 22.2,7.86C21.49,8.19 20.73,8.42 19.92,8.53C20.7,8.03 21.3,7.2 21.58,6.24C21.51,6.17 22.46,6 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22,12C22,6.48 17.52,2 12,2S2,6.48 2,12C2,16.85 5.64,20.79 10.21,21.82V14.16H7.3V12H10.21V9.92C10.21,7.03 12,5.34 14.65,5.34C15.95,5.34 17.28,5.55 17.28,5.55V8.13H15.9C14.5,8.13 14.12,9.1 14.12,9.92V12H17.1L16.63,14.16H14.12V21.82C18.36,20.79 22,16.85 22,12Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.8,14.5 12,14.5C10.2,14.5 7.07,15.09 5.64,16.83C4.62,15.49 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.49 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- --- End of "All Careers" Page --- -->
+
+
+    <!-- #################################### -->
+    <!-- ### NEW: VERIFICATION MODAL      ### -->
+    <!-- #################################### -->
+    <div id="verification-modal-overlay" class="hidden">
+        
+        <div id="verification-modal" class="glass-card rounded-2xl p-8 w-full max-w-md">
+            
+            <!-- Go Back Button -->
+            <button class="verification-close-trigger absolute top-4 left-4 text-slate-400 hover:text-cyan-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </button>
+
+            <!-- Close Button (now uses class) -->
+            <button class="verification-close-trigger absolute top-4 right-4 text-slate-400 hover:text-cyan-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Modal Content -->
+            <h2 class="text-3xl font-bold text-white text-center mb-4">Code Verification</h2>
+            <p class="text-slate-400 text-center mb-6">Please enter your certificate ID to verify its authenticity.</p>
+
+            <!-- 3D Robot Viewport -->
+            <div id="robot-viewport">
+                <!-- The 3D robot scene will be injected here by JavaScript -->
+            </div>
+
+            <!-- Input Field -->
+            <div class="mb-4">
+                <label for="certificate-id" class="text-sm font-semibold text-cyan-400 mb-2 block">Certificate ID</label>
+                <input type="text" id="certificate-id" class="tech-input" placeholder="Enter Your Student ID">
+            </div>
+
+            <!-- Verify Button -->
+            <button id="verify-btn" class="w-full bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
+                           transform transition-all duration-300 ease-in-out
+                           hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
+                Verify
+            </button>
+
+            <!-- NEW: Verification Result Area -->
+            <div id="verification-result" class="mt-4 text-center min-h-[100px]">
+                <!-- Verification results will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- #################################### -->
+    <!-- ### NEW: CONTACT US PAGE (hidden) ### -->
+    <!-- #################################### -->
+    <div id="contact-us-page" class="hidden">
+        
+        <!-- Page Header --><header class="py-6 px-4 md:px-8">
+             <nav class="container mx-auto flex justify-between items-center relative">
+                 <!-- Back arrow on the left -->
+                 <button id="back-btn-contact" class="text-white font-semibold p-2 rounded-lg
+                                 transform transition-all duration-300
+                                 hover:bg-slate-700 absolute left-0">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                 </button>
+                 <!-- Page title (centered) -->
+                 <div class="text-2xl font-bold text-white mx-auto">
+                     <span class="text-cyan-400">Cyber</span>Tech Contact
+                 </div>
+            </nav>
+        </header>
+
+        <!-- Page Main Content --><main class="container mx-auto px-4 py-16 min-h-screen flex flex-col justify-center items-center">
+            
+            <!-- Modal Content -->
+            <div class="w-full max-w-3xl mx-auto text-center">
+                <h2 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                  <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-red-400">Connect</span> With Us
+                </h2>
+                <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-12">
+                  Join our community and stay updated with the latest news, releases, and exclusive content.
+                </p>
+            </div>
+
+            <!-- 3D Glowing Container (re-created from React component) -->
+            <!-- *** UPDATED: rounded-3xl *** -->
+            <div class="w-full max-w-3xl rounded-3xl bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 shadow-purple-glow p-8">
+                <!-- Flex container for icons -->
+                <!-- *** TYPO FIX: Changed classs to class *** -->
+                <div class="flex flex-wrap justify-center gap-8 md:gap-10">
+                    
+                    <!-- Instagram -->
+                    <a href="#" class="social-icon instagram">
+                        <div class="icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white">
+                              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.053 1.905.24 2.597.488.77.29 1.455.717 2.126 1.387.67.67 1.096 1.355 1.387 2.126.248.692.435 1.427.488 2.597.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.053 1.17-.24 1.905-.488 2.597-.29.77-.717 1.455-1.387 2.126-.67.67-1.355 1.096-2.126 1.387-.692.248-1.427.435-2.597.488-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.053-1.905-.24-2.597-.488-.77-.29-1.455-.717-2.126-1.387-.67-.67-1.096-1.355-1.387 2.126-.248.692-.435-1.427-.488-2.597C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.053-1.17.24-1.905.488 2.597.29-.77.717-1.455 1.387-2.126.67.67 1.355-1.096 2.126-1.387.692-.248 1.427.435 2.597.488C8.416 2.175 8.796 2.163 12 2.163m0-2.163c-3.259 0-3.667.014-4.947.072-1.28.058-2.148.272-2.91.59-1.01.42-1.84.95-2.67 1.78S.96 3.65.54 4.66c-.318.76-.532 1.63-.59 2.91C-.058 8.833 0 9.24 0 12s.014 3.167.072 4.447c.058 1.28.272 2.148.59 2.91.42 1.01.95 1.84 1.78 2.67s1.66.92 2.67 1.78c.76.318 1.63.532 2.91.59 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.28-.058 2.148-.272 2.91-.59 1.01-.42 1.84-.95 2.67-1.78s.92-1.66 1.78-2.67c.318-.76.532-1.63.59-2.91.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.058-1.28-.272-2.148-.59-2.91-.42-1.01-.95-1.84-1.78-2.67S20.35.96 19.34.54c-.76-.318-1.63-.532-2.91-.59C15.167.014 14.76 0 12 0Z"/>
+                              <path d="M12 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324Zm0 10.162a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"/>
+                              <path d="M16.965 5.59a1.44 1.44 0 1 1 2.88 0 1.44 1.44 0 0 1-2.88 0Z"/>
+                            </svg>
+                        </div>
+                        <span class="icon-label">Instagram</span>
+                    </a>
+                    
+                    <!-- NEW: Telegram (Replaces Discord) -->
+                    <a href="#" class="social-icon telegram">
+                        <div class="icon-container">
+                            <!-- *** UPDATED TELEGRAM LOGO *** -->
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.65 12c-.88-.27-.88-1.37.2-1.72L21.25 4.45c.78-.29 1.45.34 1.15.99l-2.71 12.02c-.22.99-1.01 1.25-1.78.78l-3.56-2.61-1.72 1.65c-.19.19-.35.35-.55.55-.38.38-.88.24-1.09.02l.02-.01z"/>
+                             </svg>
+                        </div>
+                        <span class="icon-label">Telegram</span>
+                    </a>
+                    
+                    <!-- NEW: Email (Replaces GitHub) -->
+                    <a href="mailto:contact@cybertech.com" class="social-icon email">
+                        <div class="icon-container">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <span class="icon-label">Email</span>
+                    </a>
+                    
+                    <!-- LinkedIn -->
+                    <a href="#" class="social-icon linkedin">
+                        <div class="icon-container">
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+                            </svg>
+                        </div>
+                        <span class="icon-label">LinkedIn</span>
+                    </a>
+
+                    <!-- NEW: WhatsApp -->
+                    <a href="#" class="social-icon whatsapp">
+                        <div class="icon-container">
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.0-6.556 5.333-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.333 11.893-11.893 11.893-1.946 0-3.824-.486-5.46-1.39L.057 24zM6.59 4.848a9.916 9.916 0 0 1 11.565 11.564 9.916 9.916 0 0 1-11.565-11.564zM11.996 21.848c5.448 0 9.873-4.425 9.876-9.873.003-5.449-4.424-9.873-9.873-9.876-5.449.003-9.873 4.427-9.876 9.873 0 2.02.61 3.9 1.684 5.488l-1.077 3.935 3.999-1.076a9.882 9.882 0 0 0 5.263 1.523zM8.349 7.373c-.225-.002-.45.045-.663.136s-.413.21-.58.35-.312.3-.43.48-.212.39-.27.61-.082.47-.082.72.015.51.045.73c.03.22.078.43.14.63.104.33.24.64.408.95.22.42.478.83.77 1.22.37.5.787.97 1.24 1.41.53.51 1.1 1.01 1.7 1.47.51.36 1.04.68 1.59.94.57.27 1.16.5 1.77.67.22.06.45.1.68.12.25.02.5.03.75.03.27 0 .54-.01.8-.04.27-.03.53-.08.77-.15.22-.07.44-.17.63-.3.19-.13.35-.28.49-.46.13-.18.23-.38.3-.59.07-.22.1-.45.1-.7.01-.26.01-.52-.01-.78-.02-.27-.06-.53-.12-.78s-.14-.48-.24-.7-.22-.4-.36-.57-.3-.3-.48-.4c-.18-.1-.38-.17-.59-.2s-.43-.04-.66-.02c-.24.02-.48.06-.71.12-.23.06-.46.14-.68.25-.22.11-.43.23-.62.37-.2.14-.37.3-.52.47-.15.17-.28.36-.38.56-.1.19-.18.4-.24.61-.06.21-.08.43-.07.65.01.21.07.41.16.59.09.18.21.34.36.47.15.13.33.23.53.3.2.07.41.1.62.1.24,0,.48-.04.7-.12.23-.08.44-.19.63-.32.19-.13.36-.28.5-.45l.04-.05c.1-.13.16-.28.16-.43 0-.15-.05-.3-.15-.42-.1-.12-.24-.22-.39-.29-.15-.07-.32-.1-.49-.1-.18 0-.35.03-.51.08-.16.06-.31.13-.45.22-.08.05-.15.1-.22.15l-.26.2c-.08.05-.18.06-.28.03-.1-.03-.18-.1-.23-.19a.68.68 0 0 1-.1-.28c-.02-.1-.02-.2-.02-.3v-.48c0-.15.02-.3.05-.45s.08-.28.14-.42c.06-.14.15-.26.25-.37.1-.11.22-.2.35-.27.13-.07.28-.13.43-.16.15-.03.31-.05.47-.05.3,0,.6.06.87.18.27.12.5.28.68.48.18.2.32.43.43.68.1.25.17.5.18.77.02.26.02.52.01.77-.01.27-.04.53-.1.77-.06.25-.14.48-.25.7s-.24.42-.4.6c-.16.18-.34.34-.54.47-.2.13-.42.24-.65.32-.23.08-.47.13-.72.15-.25.02-.5.03-.76.03-.31 0-.62-.03-.92-.08-.3-.05-.59-.14-.87-.26-.28-.12-.55-.28-.79-.48s-.47-.43-.67-.7q-.3-.4-.53-.82c-.23-.42-.4-.87-.5-1.3-.07-.3-.12-.6-.14-.92-.02-.3-.02-.61-.01-.92.01-.29.04-.57.1-.84.06-.27.15-.52.27-.75.12-.23.28-.43.46-.61.18-.18.39-.33.62-.44.23-.11.48-.2.74-.26.26-.06.53-.1.81-.11.53-.02 1.05.06 1.54.24.49.18.93.45 1.29.79.36.34.66.75.88 1.21.14.3.25.6.32.91l.03.18c.02.12.02.24.01.36-.01.12-.04.24-.1.35-.06.11-.14.21-.24.28-.1.08-.22.12-.34.13-.13,0-.26-.03-.38-.08a.906.906 0 0 1-.36-.26c-.1-.13-.17-.27-.22-.43-.05-.15-.08-.3-.09-.45-.01-.15-.01-.3-.01-.46 0-.32.03-.64.08-.95.06-.31.14-.61.25-.89.11-.28.25-.54.42-.78.17-.24.36-.45.58-.64.22-.19.46-.35.72-.48.26-.13.54-.23.83-.3.29-.07.59-.12.9-.14.31-.02.62-.02.93-.02z"/>
+                            </svg>
+                        </div>
+                        <span class="icon-label">WhatsApp</span>
+                    </a>
+
+                </div>
+            </div>
+
+        </main>
+        
+        <!-- *** FOOTER REMOVED FROM THIS PAGE *** -->
+    </div>
+    <!-- --- End of "Contact Us" Page --- -->
+
+
+    <!-- ######################################## -->
+    <!-- ### NEW: PRIVACY POLICY PAGE (hidden) ### -->
+    <!-- ######################################## -->
+    <div id="privacy-policy-page" class="hidden">
+        
+        <!-- Page Header --><header class="py-6 px-4 md:px-8">
+             <nav class="container mx-auto flex justify-between items-center relative">
+                 <!-- Back arrow on the left -->
+                 <button id="back-btn-privacy" class="text-white font-semibold p-2 rounded-lg
+                                 transform transition-all duration-300
+                                 hover:bg-slate-700 absolute left-0">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                 </button>
+                 <!-- Page title (centered) -->
+                 <div class="text-2xl font-bold text-white mx-auto">
+                     <span class="text-cyan-400">Privacy</span> Policy
+                 </div>
+            </nav>
+        </header>
+
+        <!-- Page Main Content --><main class="container mx-auto px-4 py-16">
+            <div class="privacy-content max-w-4xl mx-auto">
+                <h2>Privacy Policy</h2>
+                <p>Last updated on September 12, 2025</p>
+                <p>Thank you for choosing to be part of our community at CyberTech Nexus ("Company," "We," "Us," or "Our"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at support@cybertech.com.</p>
+                <p>This privacy notice describes how we might use your information if you: Visit our website at <a href="#home">https://www.cybertechnexus.com</a> or Engage with us in other related ways ― including any sales, marketing, or events.</p>
+                <p>In this privacy notice, if we refer to:</p>
+                <ul>
+                    <li><strong>"Website,"</strong> we are referring to any website of ours that references or links to this policy</li>
+                    <li><strong>The term "Platform"</strong> refers to the Website/Domain created by the Company which provides the Client to avail services of the Company through the use of the platform.</li>
+                    <li><strong>"Services,"</strong> we are referring to our Website, and other related services, including any sales, marketing, or events</li>
+                    <li><strong>"You", "Your", "Yourself", "User",</strong> shall mean and refer to natural and legal individuals who use the Platform and who are competent to enter into binding contracts</li>
+                    <li><strong>"Third Parties"</strong> refer to any Application, Company or individual apart from the User, Vendor and the creator of this Application.</li>
+                </ul>
+                <p>The purpose of this privacy notice is to explain to you in the clearest way possible what information we collect, how we use it, and what rights you have in relation to it. If there are any terms in this privacy notice that you do not agree with, please discontinue use of our Services immediately.</p>
+                <p>While you may be able to browse certain sections of the Platform without registering with us, however, By visiting this Platform, providing your information or availing out product/service, you expressly agree to be bound by the terms and conditions of this Privacy Policy, the Terms of Use and the applicable service/product terms and conditions, and agree to be governed by the laws. If you do not agree please do not use or access our Platform.</p>
+                <p>Please read this privacy notice carefully, as it will help you understand what we do with the information that we collect.</p>
+                
+                <h3>Applicability</h3>
+                <p>This privacy policy ("Policy") describes Our policies and procedures on the collection, use, storage and disclosure of any information including, business or personal information provided by You while using Our Website.</p>
+                
+                <h3>What Information Do We Collect?</h3>
+                <p>CyberTech Nexus collects personal information that you voluntarily provide to us when you register on the Website, express an interest in obtaining information about us or our products and services, when you participate in activities on the Website or otherwise when you contact us.</p>
+                <p>The personal information that we collect depends on the context of your interactions with us and the Website, the choices you make and the products and features you use. The personal information we collect may include the following: Personal Information such as, but not limited to, Name, Email Id, Mobile number, Institution, Password, Age, Address, etc,</p>
+                <p><strong>Payment Data-</strong> We may collect data necessary to process your payment if you make purchases, such as your payment instrument number (such as a credit card number), and the security code associated with your payment instrument.</p>
+                <p>All personal information that you provide to us must be true, complete and accurate, and you must notify us of any changes to such personal information. If you choose to post messages on our message boards, chat rooms or other message areas or leave feedback or if you use voice commands to shop on the Platform, we will collect that information you provide to us. We retain this information as necessary to resolve disputes, provide customer support and troubleshoot problems as permitted by law.</p>
+                <p>If you send us personal correspondence, such as emails or letters, or if other users or third parties send us correspondence about your activities or postings on the Platform, we may collect such information into a file specific to you.</p>
+                <p>We collect information that You provide to Us over telephone. We may make and keep a record of the information You share with us; Information that You provide to Us by completing surveys.</p>
+                
+                <h3>Information collected from other sources</h3>
+                <p>In order to enhance our ability to provide relevant marketing, offers, and services to you and update our records, we may obtain information about you from other sources, such as public databases, joint marketing partners, affiliate programs, data providers, as well as from other third parties. This information includes mailing addresses, job titles, email addresses, phone numbers, intent data (or user behavior data), Internet Protocol (IP) addresses, social media profiles, social media URLs and custom profiles, for purposes of targeted advertising and event promotion.</p>
+                
+                <h3>How Do We Use Your Information?</h3>
+                <p>We use personal information collected via our Website for a variety of business purposes described below. We process your personal information for these purposes in reliance on our legitimate business interests, in order to enter into or perform a contract with you, with your consent, and/or for compliance with our legal obligations. We indicate the specific processing grounds we rely on next to each purpose listed below.</p>
+                <p>We use the information we collect or receive:</p>
+                <ul>
+                    <li><strong>To facilitate account creation and logon process.</strong> If you choose to link your account with us to a third-party account (such as your Google or Facebook account), we use the information you allowed us to collect from those third parties to facilitate account creation and logon process for the performance of the contract.</li>
+                    <li><strong>To post testimonials.</strong> We post testimonials on our Website that may contain personal information. Prior to posting a testimonial, we will obtain your consent to use your name and the content of the testimonial. If you wish to update or delete your testimonial, please contact us at support@cybertech.com and be sure to include your name, testimonial location, and contact information.</li>
+                    <li><strong>Request feedback.</strong> We may use your information to request feedback and to contact you about your use of our Website.</li>
+                    <li>To monitor, improve and administer our Website.</li>
+                    <li>To conduct research and analysis.</li>
+                    <li><strong>To enable user-to-user communications.</strong> We may use your information in order to enable user-to-user communications with each user's consent.</li>
+                    <li><strong>To manage user accounts.</strong> We may use your information for the purposes of managing our account and keeping it in working order.</li>
+                    <li>To remember information to help You efficiently access the Website.</li>
+                    <li>To provide You with information that You request from Us.</li>
+                    <li><strong>To send you marketing and promotional communications.</strong> We and/or our third-party marketing partners may use the personal information you send to us for our marketing purposes, if this is in accordance with your marketing preferences.</li>
+                    <li><strong>Deliver targeted advertising to you.</strong> We may use your information to develop and display personalized content and advertising (and work with third parties who do so) tailored to your interests and/or location and to measure its effectiveness.</li>
+                    <li>To carry out Our obligations arising from any contracts entered into between You and Us.</li>
+                    <li>To notify You about changes on Our Website.</li>
+                    <li>To enable Us to comply with Our legal and regulatory obligations.</li>
+                </ul>
+                <p>In our efforts to continually improve our product and service offerings, we and our affiliates collect and analyse demographic and profile data about our users' activity on our Platform. We identify and use your IP address to help diagnose problems with our server and to administer our Platform. Your IP address is also used to help identify you and to gather broad demographic information.</p>
+
+                <h3>Will Your Information Be Shared With Anyone?</h3>
+                <p>We use the information to understand Your needs and accordingly facilitate Our services and route You through the relevant information that meets Your need. We do not sell, rent, trade or exchange any personally identifying information of Our Users. We may provide the Information to Our affiliates and service providers under contract (such as customer care, data analytics) to support the operation of the Website and Our Services. To the extent we use Your personal information to market to You, we will provide You the ability to opt-out of such uses.</p>
+                <p>We do not sell, rent or otherwise provide your personal or business information to third parties except as provided in this policy. We may share Your information with third parties with Your prior consent and in such an event, the third parties' use of Your information will be bound by the Policy. Your information may be stored in locations outside the direct control of CyberTech Nexus (for instance, on servers or databases co-located with hosting providers).</p>
+                <p>We may disclose Your information to service providers involved in operating Our business. This includes payment providers, third party servers, email service providers and professionals such as accountants and lawyers. We reserve the right to disclose your personal information in the scope and in situations as required by the law and when we believe in good faith that such disclosure is necessary to protect our rights, to report suspected illegal activity, comply with judicial proceedings, court orders or decisions, or legal process served on our website.</p>
+
+                <h3>Do We Use Cookies and Other Tracking Technologies?</h3>
+                <p>a) The User is aware that a 'Cookie' is a small piece of information stored by a web server on a web browser so it can later be traced back from that particular browser, and that cookies are useful for enabling the browser to remember information specific to a given user, including but not limited to a User's login identification, password, etc. The User is aware that the Website places both permanent and temporary cookies in the User's computer's hard drive and web browser, and does hereby expressly consent to the same.</p>
+                <p>b) The User is further aware that the Website uses data collection devices such as cookies on certain pages of the Website to help analyse web page flow, measure promotional effectiveness, and promote trust and safety, and that certain features of the Website are only available through the use of such cookies. While the User is free to decline the Website's cookies if the User's browser permits, the User may consequently be unable to use certain features on the Website.</p>
+                <p>c) Additionally, the User is aware that he/she might encounter cookies or other similar devices on certain pages of the Website that are placed by third parties or affiliates of the Company/Website. The User expressly agrees and acknowledges that the Company/Website does not control the use of such cookies/other devices by third parties, that the Company/Website is in no way responsible for the same, and that the User assumes any and all risks in this regard.</p>
+
+                <h3>How Long Do We Keep Your Information?</h3>
+                <p>We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy notice, unless a longer retention period is required or permitted by law (such as tax, accounting or other legal requirements). No purpose in this notice will require us to keep your personal information for longer than the period of time in which users have an account with us.</p>
+                <p>When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.</p>
+
+                <h3>Your Choices About Your Information</h3>
+                <p>You may, of course, decline to submit personally identifiable information through the Website, in which case CyberTech Nexus may not be able to provide certain services to you. In addition, you may update or correct your account information and email preferences at any time by logging in to your account. If you would like us to remove your personally identifiable information from our database, please send a request to support@cybertech.com.</p>
+                <p>We are not responsible for revising or removing your personally identifiable information obtained by any third party who has previously been provided your information by us in accordance with this policy or any third party to whom you have provided such information (whether by sharing your login and password, or otherwise).</p>
+
+                <h3>Links to Third Party Sites</h3>
+                <p>Our Website may, from time to time, contain links to and from the websites of Our partner networks, affiliates and other third parties. The inclusion of a link does not imply any endorsement by Us of the third party website, the website's provider, or the information on the third party website. If You follow a link to any of these websites, please note that these websites may be governed by their own privacy policies and We disclaim all responsibility or liability with respect to these policies or the websites. Please check these policies and the terms of the websites before You submit any information to these websites.</p>
+
+                <h3>Security Precautions</h3>
+                <p>We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure, so we cannot promise or guarantee that hackers, cybercriminals, or other unauthorized third parties will not be able to defeat our security, and improperly collect, access, steal, or modify your information. Although we will do our best to protect your personal information, transmission of personal information to and from our Website is at your own risk. You should only access the Website within a secure environment.</p>
+
+                <h3>Children Information</h3>
+                <p>We do not knowingly solicit or collect personal information from children under the age of 18 and use of our Platform is available only to persons who can form a legally binding contract under the Indian Contract Act, 1872. If you are under the age of 18 years, then you must use the Platform, application or services under the supervision of your parent, legal guardian, or any responsible adult.</p>
+
+                <h3>Data Retention</h3>
+                <p>We retain your personal information in accordance with applicable laws, for a period no longer than is required for the purpose for which it was collected or as required under any applicable law. However, we may retain data related to you if we believe it may be necessary to prevent fraud or future abuse or if required by law or for other legitimate purposes. We may continue to retain your data in anonymised form for analytical and research purposes.</p>
+
+                <h3>Your Consent</h3>
+                <p>By visiting our Platform or by providing your information, you consent to the collection, use, storage, disclosure and otherwise processing of your information (including sensitive personal information) on the Platform in accordance with this Privacy Policy. If you disclose to us any personal information relating to other people, you represent that you have the authority to do so and to permit us to use the information in accordance with this Privacy Policy.</p>
+                <p>You, while providing your personal information over the Platform or any partner platforms or establishments, consent to us (including our other corporate entities, affiliates, lending partners, technology partners, marketing channels, business partners and other third parties) to contact you through SMS, instant messaging apps, call and/or e-mail for the purposes specified in this Privacy Policy.</p>
+                <p>If you have questions or comments about your privacy rights, you may email us at support@cybertech.com.</p>
+
+                <h3>Controls for Do-Not-Track Features</h3>
+                <p>Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this privacy notice.</p>
+
+                <h3>Exclusion</h3>
+                <p>This Policy does not apply to any information other than such information collected otherwise. This Policy shall not apply to any unsolicited information You provide Us through this Website or through any other means. This includes, but is not limited to, information posted to any public areas of the Website. All such unsolicited information shall be deemed to be non-confidential and CyberTech Nexus shall be free to use, disclose such unsolicited information without limitation</p>
+
+                <h3>Severability</h3>
+                <p>We have made every effort to ensure that this Policy adheres with the applicable laws. The invalidity or unenforceability of any part of this Policy shall not prejudice or affect the validity or enforceability of the remainder of this Policy.</p>
+
+                <h3>Governing Law and Dispute Resolution</h3>
+                <p>This Policy shall be governed by and construed in accordance with the laws of India and the courts at Bengaluru, Karnataka shall have exclusive jurisdiction in relation to any disputes arising out of or in connection with this Policy.</p>
+
+                <h3>Foreign Jurisdiction</h3>
+                <p>CyberTech Nexus makes no representation that the content contained in the Website is appropriate or to be used anywhere outside of India. The information provided on or through the contents of the Website is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject the Company to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to theT-extent local laws are applicable.</p>
+
+                <h3>Changes to This Privacy Policy</h3>
+                <p>Please check our Privacy Policy periodically for changes. We may update this privacy notice from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible. If we make material changes to this privacy notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.</p>
+
+                <h3>Consent Withdrawal, Data Download & Data Removal Requests</h3>
+                <p>To withdraw your consent, or to request the download or delete your data with us for any or all our products & services at any time, please email to support@cybertech.com.</p>
+
+                <h3>Contact Information:</h3>
+                <p>For any questions or concerns regarding this Privacy Policy, please contact CyberTech Nexus at support@cybertech.com.</p>
+                
+                <!-- This link is now redundant because of the header arrow -->
+                <!-- <a href="#home" id="back-to-policies-btn" class="inline-block mt-8 text-cyan-400 hover:text-cyan-300 transition-colors">
+                    &larr; Back to Home
+                </a> -->
+            </div>
+        </main>
+        
+        <!-- --- Footer for Privacy Policy Page --- -->
+        <footer class="mt-24">
+            <div class="glass-card container mx-auto rounded-t-2xl p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Column 1: Brand -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                           <span class="text-cyan-400">Cyber</span>Tech
+                        </h3>
+                        <p class="text-gray-400 max-w-sm">
+                            Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: Explore Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Explore</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#home" id="footer-pri-home" class="text-gray-400 hover:text-cyan-400 transition-colors">Home</a></li>
+                            <li><a href="#" id="footer-pri-verification" class="text-gray-400 hover:text-cyan-400 transition-colors">Verification</a></li>
+                            <li><a href="#internships" id="footer-pri-internships" class="text-gray-400 hover:text-cyan-400 transition-colors">Internships</a></li>
+                            <li><a href="#careers" id="footer-pri-careers" class="text-gray-400 hover:text-cyan-400 transition-colors">Careers</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Company Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#contact-us" id="footer-pri-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
+                            <li><a href="#privacy-policy" id="footer-pri-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="border-t border-slate-700 my-8"/>
+
+                <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
+                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <!-- Social Icons (SVG Placeholders) -->
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.75,5.9 11.75,8.25C11.75,8.58 11.79,8.92 11.86,9.24C8.28,9.06 5.1,7.38 2.9,4.79C2.53,5.42 2.36,6.16 2.36,6.93C2.36,8.47 3.11,9.85 4.17,10.69C3.49,10.67 2.86,10.49 2.3,10.2C2.3,10.22 2.3,10.24 2.3,10.26C2.3,12.4 3.86,14.18 5.88,14.58C5.5,14.68 5.1,14.71 4.7,14.71C4.42,14.71 4.15,14.68 3.89,14.63C4.46,16.34 6.08,17.56 8.1,17.6C6.55,18.81 4.67,19.53 2.63,19.53C2.27,19.53 1.91,19.51 1.56,19.46C3.61,20.81 6.04,21.66 8.7,21.66C16.01,21.66 20.24,15.68 20.24,10.3C20.24,10.13 20.24,9.96 20.23,9.79C20.97,9.26 21.66,8.61 22.2,7.86C21.49,8.19 20.73,8.42 19.92,8.53C20.7,8.03 21.3,7.2 21.58,6.24C21.51,6.17 22.46,6 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22,12C22,6.48 17.52,2 12,2S2,6.48 2,12C2,16.85 5.64,20.79 10.21,21.82V14.16H7.3V12H10.21V9.92C10.21,7.03 12,5.34 14.65,5.34C15.95,5.34 17.28,5.55 17.28,5.55V8.13H15.9C14.5,8.13 14.12,9.1 14.12,9.92V12H17.1L16.63,14.16H14.12V21.82C18.36,20.79 22,16.85 22,12Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.8,14.5 12,14.5C10.2,14.5 7.07,15.09 5.64,16.83C4.62,15.49 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.49 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- --- End of Privacy Policy Page --- -->
+
+
+    <!-- #################################### -->
+    <!-- ###       CORE JAVASCRIPT      ### -->
+    <!-- #################################### -->
+    <script type="module">
+        
+        // --- Mock Certificate Database ---
+        const certificateDatabase = {
+            'ID12345': {
+                name: 'Alex Johnson',
+                course: 'Robotics Engineering',
+                duration: '6 Months'
+            },
+            'ID67890': {
+                name: 'Maria Garcia',
+                course: 'AI & Machine Learning',
+                duration: '3 Months'
+            },
+            'ID007': {
+                name: 'James Bond',
+                course: 'Cybersecurity & Threat Analysis',
+                duration: '12 Months'
+            }
+        };
+
+        let scene, camera, renderer, clock;
+        let shapes = [];
+        let mouse = new THREE.Vector2();
+        let robot; // Variable to hold our robot
+
+        // --- NEW: Modal 3D Scene Variables ---
+        let modalScene, modalCamera, modalRenderer, modalRobot, modalClock;
+        let modalAnimationId; // To stop the animation loop
+
+        function init() {
+            // Get the container
+            const container = document.getElementById('canvas-container');
+            if (!container) return; // Exit if container not found
+
+            // --- Clock (for time-based animation) ---
+            clock = new THREE.Clock();
+
+            // --- Scene ---
+            scene = new THREE.Scene();
+
+            // --- Camera ---
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 10;
+
+            // --- Renderer ---
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // alpha:true for transparent bg
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // --- Lights ---
+            const ambientLight = new THREE.AmbientLight(0x404040, 2); // soft white light
+            scene.add(ambientLight);
+            
+            const pointLight = new THREE.PointLight(0x06b6d4, 3, 100); // Cyan light
+            pointLight.position.set(5, 5, 5);
+            scene.add(pointLight);
+
+            const pointLight2 = new THREE.PointLight(0xffffff, 1, 100); // White light
+            pointLight2.position.set(-5, -5, 5);
+            scene.add(pointLight2);
+
+            // --- Create Shapes (Robots/Tech Elements) ---
+            const materials = [
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x06b6d4, // Cyan
+                    metalness: 0.8,
+                    roughness: 0.2
+                }),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0x94a3b8, // Slate
+                    metalness: 0.9, 
+                    roughness: 0.4
+                }),
+                new THREE.MeshStandardMaterial({ 
+                    color: 0xffffff, // White
+                    metalness: 0.5, 
+                    roughness: 0.1
+                })
+            ];
+
+            const geometries = [
+                new THREE.IcosahedronGeometry(0.5, 0), // Crystal shape
+                new THREE.BoxGeometry(0.8, 0.8, 0.8),    // Cube
+                new THREE.TorusKnotGeometry( 0.3, 0.1, 100, 16 ) // Tech knot
+            ];
+
+            // Create 30 random shapes
+            for (let i = 0; i < 30; i++) {
+                const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+                const material = materials[Math.floor(Math.random() * materials.length)];
+                const mesh = new THREE.Mesh(geometry, material);
+
+                // Random positions in a 3D space
+                mesh.position.set(
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20,
+                    (Math.random() - 0.5) * 20
+                );
+
+                // Random rotations
+                mesh.rotation.set(
+                    Math.random() * Math.PI,
+                    Math.random() * Math.PI,
+                    Math.random() * Math.PI
+                );
+
+                // Random scale
+                const scale = Math.random() * 0.5 + 0.5;
+                mesh.scale.set(scale, scale, scale);
+                
+                scene.add(mesh);
+                shapes.push(mesh);
+            }
+
+            // --- Create Robot ---
+            robot = createRobot();
+            robot.position.set(0, 0, 5); // Start it in front of the camera
+            scene.add(robot);
+
+            // --- Event Listeners ---
+            window.addEventListener('resize', onWindowResize, false);
+            document.addEventListener('mousemove', onMouseMove, false);
+
+            // Start animation loop
+            animate();
+        }
+
+        // --- NEW: Initialize Modal 3D Scene ---
+        function initModalScene() {
+            const container = document.getElementById('robot-viewport');
+            if (!container || container.childElementCount > 0) {
+                // Already initialized or container not found
+                return;
+            }
+
+            modalClock = new THREE.Clock();
+            
+            // Scene
+            modalScene = new THREE.Scene();
+            modalScene.background = new THREE.Color(0x0f172a); // bg-slate-900
+
+            // Camera
+            const aspect = container.clientWidth / container.clientHeight;
+            modalCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
+            modalCamera.position.z = 4;
+            
+            // Renderer
+            modalRenderer = new THREE.WebGLRenderer({ antialias: true });
+            modalRenderer.setSize(container.clientWidth, container.clientHeight);
+            modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(modalRenderer.domElement);
+
+            // Lights
+            const ambient = new THREE.AmbientLight(0x404040, 3);
+            modalScene.add(ambient);
+            const pointLight = new THREE.PointLight(0x06b6d4, 5, 10);
+            pointLight.position.set(2, 2, 2);
+            modalScene.add(pointLight);
+
+            // Robot
+            modalRobot = createRobot(); // Use the same robot creation function
+            modalScene.add(modalRobot);
+
+            // Handle resize for the modal canvas
+            new ResizeObserver(() => {
+                if (modalRenderer && container.clientWidth > 0 && container.clientHeight > 0) {
+                    const w = container.clientWidth;
+                    const h = container.clientHeight;
+                    modalCamera.aspect = w / h;
+                    modalCamera.updateProjectionMatrix();
+                    modalRenderer.setSize(w, h);
+                }
+            }).observe(container);
+        }
+
+        // --- NEW: Animate Modal Scene ---
+        function animateModalScene() {
+            // Start the loop
+            modalAnimationId = requestAnimationFrame(animateModalScene);
+
+            if (modalRobot && modalClock && modalRenderer) {
+                const elapsedTime = modalClock.getElapsedTime();
+                
+                // Gently rotate the robot
+                modalRobot.rotation.y = elapsedTime * 0.5;
+
+                // Render the modal scene
+                modalRenderer.render(modalScene, modalCamera);
+            }
+        }
+
+        // --- NEW: Stop Modal Scene ---
+        function stopModalScene() {
+            if (modalAnimationId) {
+                cancelAnimationFrame(modalAnimationId);
+                modalAnimationId = null;
+            }
+        }
+
+        // --- Create Robot Function ---
+        function createRobot() {
+            const robotGroup = new THREE.Group();
+
+            // Materials
+            const bodyMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x94a3b8, // Slate
+                metalness: 0.9, 
+                roughness: 0.4
+            });
+            const eyeMaterial = new THREE.MeshStandardMaterial({
+                color: 0x06b6d4, // Cyan
+                emissive: 0x06b6d4, // Make it glow
+                emissiveIntensity: 3 // Brighter glow
+            });
+
+            // Head
+            const headGeometry = new THREE.IcosahedronGeometry(0.4, 0);
+            const head = new THREE.Mesh(headGeometry, bodyMaterial);
+            head.position.y = 1;
+            
+            // Eye
+            const eyeGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+            const eye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+            eye.position.z = 0.35; // Stick it on the front of the head
+            head.add(eye);
+            
+            robotGroup.add(head);
+
+            // Body
+            const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 32);
+            const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            robotGroup.add(body);
+
+            // "Antenna"
+            const antennaGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.5, 8);
+            const antenna = new THREE.Mesh(antennaGeometry, bodyMaterial);
+            antenna.position.y = 1.6; // On top of the head
+            head.add(antenna);
+            
+            // "Antenna light"
+            const antennaLight = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 8), eyeMaterial);
+            antennaLight.position.y = 0.25; // Tip of the antenna
+            antenna.add(antennaLight);
+
+            return robotGroup;
+        }
+
+        // --- Handle Mouse Move (for 3D hover effect) ---
+        function onMouseMove(event) {
+            // Normalize mouse position to -1 to +1 range
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        // --- Handle Window Resize ---
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime(); // Get time since load
+
+            // Animate all small shapes
+            shapes.forEach(shape => {
+                shape.rotation.x += 0.002;
+                shape.rotation.y += 0.003;
+            });
+
+            // --- Animate Robot ---
+            if (robot) {
+                // 1. Make it move in a circle (patrol)
+                robot.position.x = Math.sin(elapsedTime * 0.5) * 5; // 5 units radius, slow speed
+                robot.position.z = Math.cos(elapsedTime * 0.5) * 5 - 3; // Move circle path back a bit
+                
+                // 2. Make it "bob" up and down
+                robot.position.y = Math.sin(elapsedTime * 2) * 0.2; // 0.2 units up/down, faster speed
+
+                // 3. Make its head "look" around
+                if(robot.children.length > 0) {
+                    robot.children[0].rotation.y = Math.sin(elapsedTime * 0.7) * 0.5; // Look left/right
+                }
+            }
+            // --- End Robot Animation ---
+
+            // "Hover" effect: Move camera based on mouse position
+            // Lerp (linear interpolate) for smooth camera movement
+            camera.position.x += (mouse.x * 2 - camera.position.x) * 0.02;
+            camera.position.y += (-mouse.y * 2 - camera.position.y) * 0.02;
+            camera.lookAt(scene.position); // Always look at the center
+
+            // Render the scene
+            renderer.render(scene, camera);
+        }
+
+        // --- Page Navigation JS ---
+        function setupNavigation() {
+            const mainContent = document.getElementById('content-wrapper');
+            const internshipsPage = document.getElementById('internships-page');
+            
+            const viewAllBtn = document.getElementById('view-all-internships-btn'); 
+            const backBtn = document.getElementById('back-btn');
+
+            const careersPage = document.getElementById('careers-page');
+            const viewAllCareersBtn = document.getElementById('view-all-careers-btn');
+            const backBtnCareers = document.getElementById('back-btn-careers');
+
+            const navHome = document.getElementById('nav-home');
+            const navInternships = document.getElementById('nav-internships');
+            const navCareers = document.getElementById('nav-careers');
+            
+            const navVerification = document.getElementById('nav-verification');
+            const verificationModalOverlay = document.getElementById('verification-modal-overlay');
+            const closeVerificationModalTriggers = document.querySelectorAll('.verification-close-trigger');
+
+            // --- NEW: Contact Us Page Elements ---
+            const navContactUs = document.getElementById('nav-contact-us');
+            const contactUsPage = document.getElementById('contact-us-page');
+            const backBtnContact = document.getElementById('back-btn-contact');
+
+            // --- NEW: Privacy Policy Page Elements ---
+            const privacyPolicyPage = document.getElementById('privacy-policy-page');
+            const backBtnPrivacy = document.getElementById('back-btn-privacy');
+            // const backToPoliciesBtn = document.getElementById('back-to-policies-btn'); // Link at bottom - REMOVED
+
+            const verifyBtn = document.getElementById('verify-btn');
+            const verificationResult = document.getElementById('verification-result');
+            const certificateInput = document.getElementById('certificate-id');
+
+            // --- UPDATED: Footer Link Arrays ---
+            const homeFooterLinks = [
+                document.getElementById('footer-main-home'),
+                document.getElementById('footer-int-home'),
+                document.getElementById('footer-car-home'),
+                document.getElementById('footer-pri-home')
+            ];
+
+            const verificationFooterLinks = [
+                document.getElementById('footer-main-verification'),
+                document.getElementById('footer-int-verification'),
+                document.getElementById('footer-car-verification'),
+                document.getElementById('footer-pri-verification')
+            ];
+
+            const internshipFooterLinks = [
+                document.getElementById('footer-main-internships'),
+                document.getElementById('footer-int-internships'),
+                document.getElementById('footer-car-internships'),
+                document.getElementById('footer-pri-internships')
+            ];
+
+            const careerFooterLinks = [
+                document.getElementById('footer-main-careers'),
+                document.getElementById('footer-int-careers'),
+                document.getElementById('footer-car-careers'),
+                document.getElementById('footer-pri-careers')
+            ];
+
+            const contactFooterLinks = [
+                document.getElementById('footer-main-contact'),
+                document.getElementById('footer-int-contact'),
+                document.getElementById('footer-car-contact'),
+                document.getElementById('footer-pri-contact')
+            ];
+
+            // --- NEW: Privacy Policy Footer Links ---
+            const privacyFooterLinks = [
+                document.getElementById('footer-main-privacy'),
+                document.getElementById('footer-int-privacy'),
+                document.getElementById('footer-car-privacy'),
+                document.getElementById('footer-pri-privacy')
+            ];
+
+
+            // --- Home Links ---
+            const goToHome = (e) => {
+                e.preventDefault();
+                window.location.hash = '#home';
+            };
+            if (navHome) navHome.addEventListener('click', goToHome);
+            if (backBtn) backBtn.addEventListener('click', goToHome);
+            if (backBtnCareers) backBtnCareers.addEventListener('click', goToHome);
+            if (backBtnContact) backBtnContact.addEventListener('click', goToHome);
+            if (backBtnPrivacy) backBtnPrivacy.addEventListener('click', goToHome);
+            // if (backToPoliciesBtn) backToPoliciesBtn.addEventListener('click', goToHome); // REMOVED
+            homeFooterLinks.forEach(link => {
+                if (link) link.addEventListener('click', goToHome);
+            });
+
+
+            // --- Internships Links ---
+            const goToInternships = (e) => {
+                e.preventDefault();
+                window.location.hash = '#internships';
+            };
+            if (viewAllBtn) viewAllBtn.addEventListener('click', goToInternships);
+            if (navInternships) navInternships.addEventListener('click', goToInternships);
+            internshipFooterLinks.forEach(link => {
+                if (link) link.addEventListener('click', goToInternships);
+            });
+
+
+            // --- Careers Links ---
+            const goToCareers = (e) => {
+                e.preventDefault();
+                window.location.hash = '#careers';
+            };
+            if (viewAllCareersBtn) viewAllCareersBtn.addEventListener('click', goToCareers);
+            if (navCareers) navCareers.addEventListener('click', goToCareers);
+            careerFooterLinks.forEach(link => {
+                if (link) link.addEventListener('click', goToCareers);
+            });
+
+
+            // --- Contact Us Links ---
+            const goToContact = (e) => {
+                e.preventDefault();
+                window.location.hash = '#contact-us';
+            };
+            if (navContactUs) navContactUs.addEventListener('click', goToContact);
+            contactFooterLinks.forEach(link => {
+                if (link) link.addEventListener('click', goToContact);
+            });
+            
+            // --- Privacy Policy Links ---
+            const goToPrivacy = (e) => {
+                e.preventDefault();
+                window.location.hash = '#privacy-policy';
+            };
+            privacyFooterLinks.forEach(link => {
+                if(link) link.addEventListener('click', goToPrivacy);
+            });
+
+
+            // --- Verification Modal Listeners ---
+            const openVerificationModal = (e) => {
+                e.preventDefault();
+                if (verificationModalOverlay) {
+                    verificationModalOverlay.classList.remove('hidden');
+                    // Initialize and start the modal scene
+                    initModalScene(); // This will only run once
+                    stopModalScene(); // Stop any previous loop
+                    animateModalScene(); // Start a new loop
+                }
+            };
+            if (navVerification) navVerification.addEventListener('click', openVerificationModal);
+            verificationFooterLinks.forEach(link => {
+                if (link) link.addEventListener('click', openVerificationModal);
+            });
+
+            // Close Modal Logic
+            const closeVerificationModal = () => {
+                if (verificationModalOverlay) {
+                    verificationModalOverlay.classList.add('hidden');
+                    stopModalScene(); // Stop animation to save resources
+                    if(verificationResult) verificationResult.innerHTML = '';
+                    if(certificateInput) certificateInput.value = '';
+                }
+            };
+            if (closeVerificationModalTriggers.length > 0) {
+                closeVerificationModalTriggers.forEach(btn => btn.addEventListener('click', closeVerificationModal));
+            }
+            if (verificationModalOverlay) {
+                verificationModalOverlay.addEventListener('click', (e) => {
+                    if (e.target === verificationModalOverlay) {
+                        closeVerificationModal();
+                    }
+                });
+            }
+
+            // --- Verification Button Logic ---
+            if (verifyBtn) {
+                verifyBtn.addEventListener('click', () => {
+                    if (!certificateInput || !verificationResult) return; 
+                    const inputId = certificateInput.value.trim().toUpperCase();
+                    verificationResult.innerHTML = '';
+                    verificationResult.className = 'mt-4 text-center min-h-[100px]'; // Reset classes
+
+                    if (certificateDatabase.hasOwnProperty(inputId)) {
+                        const data = certificateDatabase[inputId];
+                        verificationResult.classList.add('text-green-400');
+                        verificationResult.innerHTML = `
+                            <h4 class="font-bold text-lg">Verified!</h4>
+                            <p class="text-slate-200"><strong>Name:</strong> ${data.name}</p>
+                            <p class="text-slate-200"><strong>Course:</strong> ${data.course}</p>
+                            <p class"text-slate-200"><strong>Duration:</strong> ${data.duration}</p>
+                        `;
+                    } else if (inputId === '') {
+                        verificationResult.classList.add('text-yellow-400');
+                        verificationResult.innerHTML = `
+                            <h4 class="font-bold text-lg">Input Required</h4>
+                            <p class="text-slate-200">Please enter a Certificate ID.</p>
+                        `;
+                    } else {
+                        verificationResult.classList.add('text-red-400');
+                        verificationResult.innerHTML = `
+                            <h4 class="font-bold text-lg">Not Found</h4>
+                            <p class="text-slate-200">The Certificate ID "${inputId}" is not valid.</p>
+                        `;
+                    }
+                });
+            }
+        }
+
+        // --- New Hash-based Router ---
+        function handleHashChange() {
+            const mainContent = document.getElementById('content-wrapper');
+            const internshipsPage = document.getElementById('internships-page');
+            const careersPage = document.getElementById('careers-page');
+            const contactUsPage = document.getElementById('contact-us-page');
+            const privacyPolicyPage = document.getElementById('privacy-policy-page');
+            
+            const hash = window.location.hash;
+
+            // Hide all pages by default
+            mainContent.classList.add('hidden');
+            internshipsPage.classList.add('hidden');
+            careersPage.classList.add('hidden');
+            if (contactUsPage) contactUsPage.classList.add('hidden'); 
+            if (privacyPolicyPage) privacyPolicyPage.classList.add('hidden');
+
+            // Show the correct page based on the hash
+            switch (hash) {
+                case '#internships':
+                    internshipsPage.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    break;
+                case '#careers':
+                    careersPage.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    break;
+                case '#contact-us':
+                    if (contactUsPage) contactUsPage.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    break;
+                case '#privacy-policy':
+                    if (privacyPolicyPage) privacyPolicyPage.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    break;
+                case '#home':
+                default:
+                    mainContent.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    break;
+            }
+        }
+        
+        // --- Function to build the careers grid (for easy editing) ---
+        function buildCareersGrid() {
+            const careers = [
+                { title: 'Data Analyst', salary: '$90,000', jobs: '25,000+', imgText: 'Data+Analyst', imgColor: '94a3b8' },
+                { title: 'Cybersecurity Analyst', salary: '$110,000', jobs: '18,000+', imgText: 'Cybersecurity', imgColor: '06b6d4' },
+                { title: 'ML Engineer', salary: '$130,000', jobs: '12,000+', imgText: 'ML+Engineer', imgColor: 'ffffff' },
+                { title: 'Software Developer', salary: '$115,000', jobs: '30,000+', imgText: 'Developer', imgColor: '818cf8' },
+                { title: 'Cloud Architect', salary: '$140,000', jobs: '15,00g+', imgText: 'Cloud', imgColor: 'f0abfc' },
+                { title: 'UI/UX Designer', salary: '$95,000', jobs: '10,000+', imgText: 'UI%2FUX', imgColor: 'fbbf24' },
+                { title: 'AI Specialist', salary: '$135,000', jobs: '9,000+', imgText: 'AI', imgColor: 'a78bfa' },
+                { title: 'Network Engineer', salary: '$100,000', jobs: '14,000+', imgText: 'Network', imgColor: '34d399' },
+                { title: 'DevOps Engineer', salary: '$125,000', jobs: '16,000+', imgText: 'DevOps', imgColor: 'f87171' },
+                { title: 'Robotics Engineer', salary: '$120,000', jobs: '7,000+', imgText: 'Robotics', imgColor: '94a3b8' },
+                { title: 'Data Scientist', salary: '$130,000', jobs: '20,000+', imgText: 'Data+Scientist', imgColor: '06b6d4' },
+                { title: 'Blockchain Developer', salary: '$140,000', jobs: '5,000+', imgText: 'Blockchain', imgColor: 'ffffff' },
+                { title: 'Game Developer', salary: '$105,000', jobs: '6,000+', imgText: 'Game+Dev', imgColor: '818cf8' },
+                { title: 'Systems Analyst', salary: '$98,000', jobs: '11,000+', imgText: 'Systems', imgColor: 'f0abfc' },
+                { title: 'Business Analyst', salary: '$92,000', jobs: '22,000+', imgText: 'Business', imgColor: 'fbbf24' },
+                { title: 'Quantum Researcher', salary: '$150,000', jobs: '2,000+', imgText: 'Quantum', imgColor: 'a78bfa' },
+                { title: 'AR/VR Developer', salary: '$120,000', jobs: '4,000+', imgText: 'AR%2FVR', imgColor: '34d399' },
+                { title: 'IT Manager', salary: '$130,000', jobs: '19,000+', imgText: 'IT+Manager', imgColor: 'f87171' },
+                { title: 'Security Consultant', salary: '$115,000', jobs: '8,000+', imgText: 'Security', imgColor: '94a3b8' },
+                { title: 'Hardware Engineer', salary: '$112,000', jobs: '7,000+', imgText: 'Hardware', imgColor: '06b6d4' }
+            ];
+
+            const grid = document.getElementById('careers-grid');
+            if (!grid) return; // Exit if grid isn't on the page
+
+            // Clear grid first
+            grid.innerHTML = ''; 
+
+            // Loop and build cards
+            careers.forEach(career => {
+                // --- *** FIXED 'src' TYPO AND BROKEN TEXT HERE *** ---
+                const cardHTML = `
+                <div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://placehold.co/400x225/0f172a/${career.imgColor}?text=${career.imgText}" alt="${career.title}" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/${career.imgColor}?text=${career.imgText}'">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2">${career.title}</h3>
+                        <p classF="text-gray-300 mb-4 text-sm">
+                            Explore a career as a ${career.title.toLowerCase()} and shape the future of tech.
+                        </p>
+                        <div class="text-sm">
+                            <p class="text-gray-400">Median Salary: <span class="font-semibold text-gray-200">${career.salary}</span></p>
+                            <p class="text-gray-400">Jobs Available: <span class="font-semibold text-gray-200">${career.jobs}</span></p>
+                        </div>
+                    </div>
+                </div>
+                `;
+                grid.innerHTML += cardHTML;
+            });
+        }
+
+        // Start everything on window load
+        window.onload = () => {
+            init(); // Start the 3D scene
+            setupNavigation(); // Setup the page switching
+            buildCareersGrid(); // Build the dynamic careers grid
+
+            // --- New Router Setup ---
+            window.addEventListener('hashchange', handleHashChange); // Listen for hash changes
+            handleHashChange(); // Run on initial load to check the URL
+        };
+
+    </script>
+</body>
+</html>
+
+
