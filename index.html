@@ -1881,7 +1881,8 @@
             renderer.render(scene, camera);
         }
 
-        // --- NEW: Function to control header style ---
+        /*
+        // --- NEW: Function to control header style (REMOVED) ---
         function updateHeaderStyle() {
             const header = document.getElementById('main-header');
             const hash = window.location.hash;
@@ -1899,6 +1900,7 @@
                 header.classList.add('glass-card');
             }
         }
+        */
 
         // --- Page Navigation JS ---
         function setupNavigation() {
@@ -2186,7 +2188,7 @@
             }
 
             // Update header AFTER switching page
-            updateHeaderStyle();
+            // updateHeaderStyle(); // <-- REMOVED THIS CALL
         }
         
         // --- Function to build the careers grid (for easy editing) ---
@@ -2253,8 +2255,8 @@
             window.addEventListener('hashchange', handleHashChange); // Listen for hash changes
             handleHashChange(); // Run on initial load to check the URL
 
-            // --- NEW: Header Scroll Listener ---
-            window.addEventListener('scroll', updateHeaderStyle); 
+            // --- NEW: Header Scroll Listener (REMOVED) ---
+            // window.addEventListener('scroll', updateHeaderStyle); 
         };
 
     </script>
