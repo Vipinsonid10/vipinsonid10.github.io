@@ -80,6 +80,16 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(51, 65, 85, 0.3); /* border-slate-700 with 30% opacity */
+            /* NEW: Added transitions */
+            transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+        }
+
+        /* --- NEW: Transparent Header Style --- */
+        .header-transparent {
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border-color: transparent;
         }
 
         /* --- NEW Career Card Style (also used for Internships) --- */
@@ -340,6 +350,111 @@
             background-color: #FBFFE1;
             opacity: 0.4; /* Soften the effect */
         }
+
+        /* --- Mountain Parallax Styles --- */
+        @keyframes parallax_fg {
+            0% { background-position: 2765px 100%; }
+            100% { background-position: 550px 100%; }
+        }
+
+        @keyframes parallax_bike {
+            0% { background-position: -300px 100%; }
+            100% { background-position: 2000px 100%; }
+        }
+        
+        .hero-container {
+            position: relative;
+            height: 100vh; /* MODIFIED: Was min-height: 70vh */
+            width: 100%;
+            overflow: hidden; /* To contain the layers */
+            /* Sky-blue gradient background */
+            background: linear-gradient(180deg, #cce7ff 0%, #79b7ff 100%); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-repeat: repeat-x;
+            background-position: 0 100%;
+            animation: parallax_fg linear infinite; /* default animation */
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10; /* Above all parallax layers */
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-title {
+            color: #0f172a; /* text-slate-900 */
+        }
+
+        .hero-subtitle {
+            color: #1e293b; /* text-slate-800 */
+        }
+
+        /* --- Dynamic Layers from React Component --- */
+        .layer-6 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/6.png);
+            animation-duration: 120s;
+            background-size: auto 222px;
+            z-index: 1;
+        }
+        .layer-5 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/5.png);
+            animation-duration: 95s;
+            background-size: auto 311px;
+            z-index: 1;
+        }
+        .layer-4 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/4.png);
+            animation-duration: 75s;
+            background-size: auto 468px;
+            z-index: 1;
+        }
+        .bike-1 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/bike.png);
+            animation-duration: 10s;
+            background-size: auto 75px;
+            z-index: 2;
+            animation-name: parallax_bike;
+            bottom: 100px;
+            background-repeat: no-repeat;
+        }
+        .bike-2 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/bike.png);
+            animation-duration: 15s;
+            background-size: auto 75px;
+            z-index: 2;
+            animation-name: parallax_bike;
+            bottom: 100px;
+            background-repeat: no-repeat;
+        }
+        .layer-3 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/3.png);
+            animation-duration: 55s;
+            background-size: auto 158px;
+            z-index: 3;
+        }
+        .layer-2 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/2.png);
+            animation-duration: 30s;
+            background-size: auto 145px;
+            z-index: 4;
+        }
+        .layer-1 {
+            background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/1.png);
+            animation-duration: 20s;
+            background-size: auto 136px;
+            z-index: 5;
+        }
     </style>
 </head>
 <body class="bg-slate-900 text-gray-100">
@@ -351,7 +466,9 @@
     <!-- #################################### -->
     <div id="content-wrapper">
         
-        <!-- Header --><header class="py-6 px-4 md:px-8">
+        <!-- Header -->
+        <!-- MODIFIED: Changed 'sticky' to 'absolute' to scroll with page, added left-0 and right-0 -->
+        <header id="main-header" class="py-6 px-4 md:px-8 absolute top-0 left-0 right-0 z-20 header-transparent transition-all duration-300">
             <nav class="container mx-auto flex justify-between items-center">
                 <div class="text-2xl font-bold text-white">
                     <span class="text-cyan-400">Cyber</span>Tech
@@ -368,18 +485,34 @@
             </nav>
         </header>
 
-        <!-- Hero Section --><main class="container mx-auto px-4 py-24 md:py-32 text-center">
-            <h1 class="text-5xl md:text-7xl font-bold text-white mb-4">
-                Welcome to the <span class="text-cyan-400">Future</span>
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-8">
-                Exploring the cutting edge of 3D, technology, and robotics.
-            </p>
-            <button class="bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
-                            transform transition-all duration-300 ease-in-out
-                            hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
-                Get Started
-            </button>
+        <!-- Hero Section -->
+        <main>
+            <section class="hero-container" aria-label="An animated parallax landscape of mountains and cyclists.">
+                <!-- Parallax layers -->
+                <div class="parallax-layer layer-6"></div>
+                <div class="parallax-layer layer-5"></div>
+                <div class="parallax-layer layer-4"></div>
+                <div class="parallax-layer bike-1"></div>
+                <div class="parallax-layer bike-2"></div>
+                <div class="parallax-layer layer-3"></div>
+                <div class="parallax-layer layer-2"></div>
+                <div class="parallax-layer layer-1"></div>
+                
+                <!-- Hero text -->
+                <div class="hero-content">
+                    <h1 class="hero-title text-5xl md:text-7xl font-bold mb-4">
+                        Welcome to the <span class="text-blue-700">Future</span>
+                    </h1>
+                    <p class="hero-subtitle text-xl md:text-2xl max-w-3xl mx-auto mb-8">
+                        Exploring the cutting edge of 3D, technology, and robotics.
+                    </p>
+                    <button class="bg-cyan-500 text-white font-semibold px-8 py-3 rounded-lg shadow-lg shadow-cyan-500/50
+                                    transform transition-all duration-300 ease-in-out
+                                    hover:bg-cyan-400 hover:scale-105 hover:shadow-cyan-glow">
+                        Get Started
+                    </button>
+                </div>
+            </section>
         </main>
 
         <!-- "Featured Technology" Section --><section class="container mx-auto px-4 py-16">
@@ -1748,6 +1881,25 @@
             renderer.render(scene, camera);
         }
 
+        // --- NEW: Function to control header style ---
+        function updateHeaderStyle() {
+            const header = document.getElementById('main-header');
+            const hash = window.location.hash;
+            const scrollTop = window.scrollY;
+
+            if (!header) return; // Safety check
+
+            // On home page, be transparent only at the very top
+            if ( (hash === '#home' || hash === '') && scrollTop < 50) {
+                header.classList.add('header-transparent');
+                header.classList.remove('glass-card');
+            } else {
+                // On all other pages, or when scrolled on home, use glass-card
+                header.classList.remove('header-transparent');
+                header.classList.add('glass-card');
+            }
+        }
+
         // --- Page Navigation JS ---
         function setupNavigation() {
             const mainContent = document.getElementById('content-wrapper');
@@ -2032,6 +2184,9 @@
                     window.scrollTo(0, 0);
                     break;
             }
+
+            // Update header AFTER switching page
+            updateHeaderStyle();
         }
         
         // --- Function to build the careers grid (for easy editing) ---
@@ -2097,10 +2252,11 @@
             // --- New Router Setup ---
             window.addEventListener('hashchange', handleHashChange); // Listen for hash changes
             handleHashChange(); // Run on initial load to check the URL
+
+            // --- NEW: Header Scroll Listener ---
+            window.addEventListener('scroll', updateHeaderStyle); 
         };
 
     </script>
 </body>
 </html>
-
-
