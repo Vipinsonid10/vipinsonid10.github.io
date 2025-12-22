@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberTech Nexus - 3D Tech Website</title>
+    <title>Decode Labs - 3D Tech Website</title>
     
     <!-- 1. Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
     
@@ -351,6 +351,37 @@
             opacity: 0.4; /* Soften the effect */
         }
 
+        /* --- NEW: Team Section Styles (3D Fanned Cards) --- */
+        .team-card-container {
+            perspective: 1000px;
+            min-height: 250px;
+        }
+        
+        .team-card-item {
+            position: absolute;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring-like easing */
+            transform-origin: center bottom;
+            /* Default state (collapsed) */
+            opacity: 0;
+            transform: translate(0, 50px) rotate(0deg) scale(0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* State when animation is triggered */
+        .team-card-container.visible .team-card-item {
+            opacity: 1;
+            /* transform is set via inline styles using CSS vars */
+            transform: translate(var(--tx), var(--ty)) rotate(var(--tr)) scale(1);
+        }
+
+        /* Hover effect: Pop out and straighten */
+        .team-card-container.visible .team-card-item:hover {
+            z-index: 100 !important;
+            transform: translate(var(--tx), -40px) rotate(0deg) scale(1.15); 
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.4); /* Cyan glow */
+            border-color: #22d3ee;
+        }
+
         /* --- Mountain Parallax Styles --- */
         @keyframes parallax_fg {
             0% { background-position: 2765px 100%; }
@@ -477,7 +508,7 @@
         <header id="main-header" class="py-6 px-4 md:px-8 absolute top-0 left-0 right-0 z-20 header-transparent transition-all duration-300">
             <nav class="container mx-auto flex justify-between items-center">
                 <div class="text-2xl font-bold text-white">
-                    <span class="text-cyan-400">Cyber</span>Tech
+                    <span class="text-cyan-400">Decode</span> Labs
                 </div>
                 <!-- ### HEADER NAVIGATION EDITED HERE ### -->
                 <!-- *** CHANGED text-blue-400 to text-blue-600 *** -->
@@ -522,90 +553,62 @@
             </section>
         </main>
 
-        <!-- "Featured Technology" Section --><section class="container mx-auto px-4 py-16">
-            <h2 class="text-3xl font-bold text-center text-white mb-12">Featured Technology</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Card 1 --><div class="glass-card p-8 rounded-2xl shadow-xl
-                                transform transition-all duration-300 ease-in-out
-                                hover:scale-105 hover:shadow-cyan-glow">
-                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">Autonomous Robots</h3>
-                    <p class="text-gray-300">
-                        Advanced robotics systems capable of learning and adapting to their environment.
-                    </p>
-                </div>
-                <!-- Card 2 --><div class="glass-card p-8 rounded-2xl shadow-xl
-                                transform transition-all duration-300 ease-in-out
-                                hover:scale-105 hover:shadow-cyan-glow">
-                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">Neural AI Core</h3>
-                    <p class="text-gray-300">
-                        Our central AI core processes petabytes of data for predictive analytics.
-                    </p>
-                </div>
-                <!-- Card 3 --><div class="glass-card p-8 rounded-2xl shadow-xl
-                                transform transition-all duration-300 ease-in-out
-                                hover:scale-105 hover:shadow-cyan-glow">
-                    <h3 class="text-2xl font-bold text-cyan-400 mb-4">3D Holo-Display</h3>
-                    <p class="text-gray-300">
-                        Interactive holographic technology that brings digital models into the real world.
-                    </p>
-                </div>
-            </div>
-        </section>
-
         <!-- --- Top Internship Programs Section (3 boxes) --- --><section class="container mx-auto px-4 pt-16">
             <h2 class="text-3xl font-bold text-center text-white mb-12">Top Internship Programs</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
                 <!-- Internship Card 1: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="IMG-20251204-WA0037.jpg" alt="AI Division" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop" alt="Artificial Intelligence" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=AI'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">AI Division</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Robotics Engineering Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Artificial Intelligence (AI)</h3>
                         <p class="text-gray-300 mb-6">
-                            Design, build, and test next-generation autonomous systems.
+                            Learn AI fundamentals, machine learning, and neural networks.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
                 <!-- Internship Card 2: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=3D+Simulation" alt="3D Simulation Lab" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=225&fit=crop" alt="Full Stack development" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Full+Stack'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">3D Simulation Lab</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Virtual Worlds Designer</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Full Stack development</h3>
                         <p class="text-gray-300 mb-6">
-                            Create photorealistic 3D environments for AI training and visualization.
+                            Master frontend and backend technologies for complete web solutions.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
                 <!-- Internship Card 3: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Data+Science" alt="Data Science" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=225&fit=crop" alt="Python Programming" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Python'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">Data Science</span>
-                        <h3 class="text-2xl font-bold text-white my-3">AI & ML Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Python Programming</h3>
                         <p class="text-gray-300 mb-6">
-                            Analyze complex datasets from our neural core to build predictive models.
+                            Learn Python from basics to advanced programming concepts.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
             </div>
@@ -616,105 +619,111 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
-                <!-- Internship Card 1: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=AI+Division" alt="AI Division" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 1 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop" alt="Artificial Intelligence" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=AI'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">AI Division</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Robotics Engineering Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Artificial Intelligence (AI)</h3>
                         <p class="text-gray-300 mb-6">
-                            Design, build, and test next-generation autonomous systems.
+                            Learn AI fundamentals, machine learning, and neural networks.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
-                <!-- Internship Card 2: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=3D+Simulation" alt="3D Simulation Lab" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 2 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=225&fit=crop" alt="Full Stack development" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Full+Stack'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">3D Simulation Lab</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Virtual Worlds Designer</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Full Stack development</h3>
                         <p class="text-gray-300 mb-6">
-                            Create photorealistic 3D environments for AI training and visualization.
+                            Master frontend and backend technologies for complete web solutions.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
-                <!-- Internship Card 3: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Data+Science" alt="Data Science" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 3 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=225&fit=crop" alt="Python Programming" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Python'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">Data Science</span>
-                        <h3 class="text-2xl font-bold text-white my-3">AI & ML Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Python Programming</h3>
                         <p class="text-gray-300 mb-6">
-                            Analyze complex datasets from our neural core to build predictive models.
+                            Learn Python from basics to advanced programming concepts.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
-                <!-- Internship Card 4: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Cybersecurity" alt="Cybersecurity" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 4 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop" alt="Data Science" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Data+Science'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">Cybersecurity</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Threat Analyst Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Data Science</h3>
                         <p class="text-gray-300 mb-6">
-                            Monitor network traffic and identify potential security threats in real-time.
+                            Analyze data, build models, and extract insights from complex datasets.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
-                <!-- Internship Card 5: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Hardware+R%26D" alt="Hardware R&D" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 5 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop" alt="Data Analytics" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Data+Analytics'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">Hardware R&D</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Quantum Computing Intern</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Data Analytics</h3>
                         <p class="text-gray-300 mb-6">
-                            Assist researchers in developing and testing experimental quantum processors.
+                            Transform raw data into meaningful insights and visualizations.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
                 
-                <!-- Internship Card 6: Career Style --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=UX%2FUI+Design" alt="UX/UI Design" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                <!-- Internship Card 6 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=225&fit=crop" alt="Java programming" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Java'">
                     <div class="p-6">
-                        <span class="text-sm font-semibold text-cyan-400 uppercase">UX/UI Design</span>
-                        <h3 class="text-2xl font-bold text-white my-3">Holo-Interface Designer</h3>
+                        <span class="text-sm font-semibold text-cyan-400 uppercase">Internship</span>
+                        <h3 class="text-2xl font-bold text-white my-3">Java programming</h3>
                         <p class="text-gray-300 mb-6">
-                            Design intuitive 3D user interfaces for our holographic display technology.
+                            Master Java programming for enterprise and mobile applications.
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
 
@@ -737,8 +746,8 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 
                 <!-- Career Card 1 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/94a3b8?text=Data+Analyst" alt="Data Analyst" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/94a3b8?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop" alt="Data Analyst" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/94a3b8?text=Data+Analyst'">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold text-white mb-2">Data Analyst</h3>
                         <p class="text-gray-300 mb-4 text-sm">
@@ -752,8 +761,8 @@
                 </div>
 
                 <!-- Career Card 2 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/06b6d4?text=Cybersecurity" alt="Cybersecurity Analyst" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=225&fit=crop" alt="Cybersecurity Analyst" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/06b6d4?text=Cybersecurity'">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold text-white mb-2">Cybersecurity Analyst</h3>
                         <p class="text-gray-300 mb-4 text-sm">
@@ -767,9 +776,8 @@
                 </div>
 
                 <!-- Career Card 3 --><div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <!-- *** FIXED 'src' TYPO HERE *** -->
-                    <img src="httpsStorage" alt="Machine Learning Engineer" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/ffffff?text=Image+Error'">
+                    <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=400&h=225&fit=crop" alt="Machine Learning Engineer" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/ffffff?text=ML+Engineer'">
                     <div class="p-6">
                         <h3 class="text-2xl font-bold text-white mb-2">ML Engineer</h3>
                         <p class="text-gray-300 mb-4 text-sm">
@@ -795,6 +803,39 @@
 
 
         <!-- #################################### -->
+        <!-- ### INSPIRATIONAL QUOTE SECTION  ### -->
+        <!-- #################################### -->
+        <section class="container mx-auto px-4 py-16">
+            <div id="quote-box" class="relative max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-2xl transition-all duration-500" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d4a2b 100%); height: 400px;">
+                <div class="flex flex-col md:flex-row items-stretch h-full" style="gap: 0; margin: 0; padding: 0;">
+                    <!-- Quote Content - Left Side -->
+                    <div class="flex-1 flex flex-col justify-center p-8 md:p-12" style="margin: 0; padding-right: 0; mask-image: linear-gradient(to left, transparent 0%, rgba(0,0,0,0.1) 5%, rgba(0,0,0,0.3) 12%, rgba(0,0,0,0.6) 20%, black 35%); -webkit-mask-image: linear-gradient(to left, transparent 0%, rgba(0,0,0,0.1) 5%, rgba(0,0,0,0.3) 12%, rgba(0,0,0,0.6) 20%, black 35%);">
+                        <svg class="w-12 h-12 mb-6 text-white opacity-30" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+                        </svg>
+                        <blockquote id="quote-text" class="text-2xl md:text-3xl font-semibold text-white leading-relaxed mb-6" style="padding-right: 2rem; overflow-wrap: break-word; word-wrap: break-word;">
+                            AI is like fire. It can cook your food, or it can burn down your house.
+                        </blockquote>
+                        <div id="quote-author" class="text-lg text-gray-300" style="padding-right: 2rem;">
+                            <p class="font-bold">Sam Altman</p>
+                            <p class="text-sm">CEO, OpenAI</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Section - Right Side -->
+                    <div class="w-full md:w-2/5" style="margin: 0; padding: 0; line-height: 0; height: 100%; overflow: hidden;">
+                        <img id="quote-image" 
+                             src="https://pbs.twimg.com/profile_images/804990434455887872/BG0Xh7Oa_400x400.jpg" 
+                             alt="Sam Altman" 
+                             class="w-full h-full object-cover"
+                             style="margin: 0; padding: 0; display: block; border: none; outline: none; mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.1) 5%, rgba(0,0,0,0.3) 12%, rgba(0,0,0,0.6) 20%, black 35%); -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.1) 5%, rgba(0,0,0,0.3) 12%, rgba(0,0,0,0.6) 20%, black 35%);">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- #################################### -->
         <!-- ### NEW: TESTIMONIALS SECTION    ### -->
         <!-- #################################### -->
         <section class="testimonial-section container mx-auto px-4 py-16">
@@ -806,7 +847,7 @@
                 <!-- Testimonial Card 1 -->
                 <div class="max-w-80 bg-slate-950 text-white rounded-2xl overflow-hidden shadow-lg shadow-cyan-500/10">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=600" 
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop&crop=faces" 
                              alt="Testimonial from Alex Johnson" 
                              class="h-[270px] w-full rounded-t-2xl hover:scale-105 transition-all duration-300 object-cover object-top"
                              onerror="this.onerror=null;this.src='https://placehold.co/320x270/020617/FFFFFF?text=Alex+J.'">
@@ -822,14 +863,14 @@
                 <!-- Testimonial Card 2 -->
                 <div class="max-w-80 bg-slate-950 text-white rounded-2xl overflow-hidden shadow-lg shadow-cyan-500/10">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=600" 
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&h=600&fit=crop&crop=faces" 
                              alt="Testimonial from Maria Garcia" 
                              class="h-[270px] w-full rounded-t-2xl hover:scale-105 transition-all duration-300 object-cover object-top"
                              onerror="this.onerror=null;this.src='https://placehold.co/320x270/020617/FFFFFF?text=Maria+G.'">
                         <div class="absolute bottom-0 z-10 h-60 w-full bg-gradient-to-t pointer-events-none from-slate-950 to-transparent"></div>
                     </div>
                     <div class="px-4 pb-4">
-                        <p class="font-medium border-b border-slate-700 pb-5 mt-4 min-h-28">“CyberTech's AI core is beyond impressive. Working with their data science team was a privilege.”</p>
+                        <p class="font-medium border-b border-slate-700 pb-5 mt-4 min-h-28">“Decode Labs' AI core is beyond impressive. Working with their data science team was a privilege.”</p>
                         <p class="mt-4">— Maria Garcia</p>
                         <p class="text-sm font-medium bg-gradient-to-r from-[#8B5CF6] via-[#E0724A] to-[#9938CA] text-transparent bg-clip-text">Data Science Intern, '24</p>
                     </div>
@@ -838,7 +879,7 @@
                 <!-- Testimonial Card 3 -->
                 <div class="max-w-80 bg-slate-950 text-white rounded-2xl overflow-hidden shadow-lg shadow-cyan-500/10">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=600&h=600&auto=format&fit=crop" 
+                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=600&fit=crop&crop=faces" 
                              alt="Testimonial from Sarah Chen" 
                              class="h-[270px] w-full rounded-t-2xl hover:scale-105 transition-all duration-300 object-cover object-top"
                              onerror="this.onerror=null;this.src='https://placehold.co/320x270/020617/FFFFFF?text=Sarah+C.'">
@@ -863,7 +904,7 @@
                     <!-- Column 1: Brand -->
                     <div class="md:col-span-2">
                         <h3 class="text-2xl font-bold text-white mb-4">
-                           <span class="text-cyan-400">Cyber</span>Tech
+                           <span class="text-cyan-400">Decode</span> Labs
                         </h3>
                         <p class="text-gray-400 max-w-sm">
                             Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
@@ -887,7 +928,8 @@
                         <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
                         <ul class="space-y-2">
                             <li><a href="#about-us" id="footer-int-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <!-- UPDATED: Added href and ID -->
+                            <li><a href="#team" id="footer-int-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
                             <li><a href="#contact-us" id="footer-int-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
                             <li><a href="#privacy-policy" id="footer-int-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
                         </ul>
@@ -897,7 +939,7 @@
                 <hr class="border-t border-slate-700 my-8"/>
 
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
-                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
                     <!-- Social Icons (SVG Placeholders) -->
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="hover:text-cyan-400 transition-colors">
@@ -935,7 +977,7 @@
                  </button>
                  <!-- Page title (centered) -->
                  <div class="text-2xl font-bold text-white mx-auto">
-                     <span class="text-cyan-400">Cyber</span>Tech Internships
+                     <span class="text-cyan-400">Decode</span> Labs Internships
                  </div>
             </nav>
         </header>
@@ -957,7 +999,7 @@
                     <!-- Column 1: Brand -->
                     <div class="md:col-span-2">
                         <h3 class="text-2xl font-bold text-white mb-4">
-                           <span class="text-cyan-400">Cyber</span>Tech
+                           <span class="text-cyan-400">Decode</span> Labs
                         </h3>
                         <p class="text-gray-400 max-w-sm">
                             Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
@@ -980,7 +1022,8 @@
                         <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
                         <ul class="space-y-2">
                             <li><a href="#about-us" id="footer-intpage-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <!-- FIX: Added href="#team" and ID -->
+                            <li><a href="#team" id="footer-intpage-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
                             <li><a href="#contact-us" id="footer-intpage-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
                             <li><a href="#privacy-policy" id="footer-intpage-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
                         </ul>
@@ -990,7 +1033,7 @@
                 <hr class="border-t border-slate-700 my-8"/>
 
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
-                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
                     <!-- Social Icons (SVG Placeholders) -->
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="hover:text-cyan-400 transition-colors">
@@ -1027,7 +1070,7 @@
                  </button>
                  <!-- Page title (centered) -->
                  <div class="text-2xl font-bold text-white mx-auto">
-                     <span class="text-cyan-400">Cyber</span>Tech Careers
+                     <span class="text-cyan-400">Decode</span> Labs Careers
                  </div>
             </nav>
         </header>
@@ -1047,7 +1090,7 @@
                     <!-- Column 1: Brand -->
                     <div class="md:col-span-2">
                         <h3 class="text-2xl font-bold text-white mb-4">
-                           <span class="text-cyan-400">Cyber</span>Tech
+                           <span class="text-cyan-400">Decode</span> Labs
                         </h3>
                         <p class="text-gray-400 max-w-sm">
                             Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
@@ -1071,7 +1114,8 @@
                         <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
                         <ul class="space-y-2">
                             <li><a href="#about-us" id="footer-car-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <!-- FIX: Added href="#team" and ID -->
+                            <li><a href="#team" id="footer-car-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
                             <li><a href="#contact-us" id="footer-car-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
                             <li><a href="#privacy-policy" id="footer-car-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
                         </ul>
@@ -1081,7 +1125,7 @@
                 <hr class="border-t border-slate-700 my-8"/>
 
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
-                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
                     <!-- Social Icons (SVG Placeholders) -->
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="hover:text-cyan-400 transition-colors">
@@ -1168,7 +1212,7 @@
                  </button>
                  <!-- Page title (centered) -->
                  <div class="text-2xl font-bold text-white mx-auto">
-                     <span class="text-cyan-400">Cyber</span>Tech Contact
+                     <span class="text-cyan-400">Decode</span> Labs Contact
                  </div>
             </nav>
         </header>
@@ -1193,7 +1237,7 @@
                 <div class="flex flex-wrap justify-center gap-8 md:gap-10">
                     
                     <!-- Instagram -->
-                    <a href="#" class="social-icon instagram">
+                    <a href="https://www.instagram.com/official_decodelabs?igsh=bTFsMzVsYjV5YXFy" target="_blank" rel="noopener noreferrer" class="social-icon instagram">
                         <div class="icon-container">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white">
                               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.053 1.905.24 2.597.488.77.29 1.455.717 2.126 1.387.67.67 1.096 1.355 1.387 2.126.248.692.435 1.427.488 2.597.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.053 1.17-.24 1.905-.488 2.597-.29.77-.717 1.455-1.387 2.126-.67.67-1.355 1.096-2.126 1.387-.692.248-1.427.435-2.597.488-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.053-1.905-.24-2.597-.488-.77-.29-1.455-.717-2.126-1.387-.67-.67-1.096-1.355-1.387 2.126-.248.692-.435-1.427-.488-2.597C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.053-1.17.24-1.905.488 2.597.29-.77.717-1.455 1.387-2.126.67.67 1.355-1.096 2.126-1.387.692-.248 1.427.435 2.597.488C8.416 2.175 8.796 2.163 12 2.163m0-2.163c-3.259 0-3.667.014-4.947.072-1.28.058-2.148.272-2.91.59-1.01.42-1.84.95-2.67 1.78S.96 3.65.54 4.66c-.318.76-.532 1.63-.59 2.91C-.058 8.833 0 9.24 0 12s.014 3.167.072 4.447c.058 1.28.272 2.148.59 2.91.42 1.01.95 1.84 1.78 2.67s1.66.92 2.67 1.78c.76.318 1.63.532 2.91.59 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.28-.058 2.148-.272 2.91-.59 1.01-.42 1.84-.95 2.67-1.78s.92-1.66 1.78-2.67c.318-.76.532-1.63.59-2.91.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.058-1.28-.272-2.148-.59-2.91-.42-1.01-.95-1.84-1.78-2.67S20.35.96 19.34.54c-.76-.318-1.63-.532-2.91-.59C15.167.014 14.76 0 12 0Z"/>
@@ -1206,7 +1250,7 @@
                     
                     <!-- NEW: WhatsApp -->
                     <!-- *** FIX: This was LinkedIn. Changed class to 'linkedin' and href to '#' *** -->
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="social-icon linkedin">
+                    <a href="https://www.linkedin.com/company/decodelabs_official/" target="_blank" rel="noopener noreferrer" class="social-icon linkedin">
                         <div class="icon-container">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
@@ -1227,7 +1271,7 @@
                     </a>
 
                     <!-- *** NEW: Restored Telegram Icon *** -->
-                    <a href="#" class="social-icon telegram">
+                    <a href="https://t.me/decodelabs_tech" target="_blank" rel="noopener noreferrer" class="social-icon telegram">
                         <div class="icon-container">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M11.94 0c-6.6 0-11.94 5.34-11.94 11.94s5.34 11.94 11.94 11.94 11.94-5.34 11.94-11.94S18.54 0 11.94 0zm5.17 7.55c.14.3.15.5.03.65l-2.09 7.37c-.12.44-.3.56-.63.35l-2.58-1.9-1.25 1.2c-.14.14-.26.26-.45.45-.48.48-.87.12-.99-.5l-1.63-5.32c-.14-.45.09-.67.5-.85l8.52-3.32c.42-.16.63.07.48.56z"></path>
@@ -1237,7 +1281,7 @@
                     </a>
 
                     <!-- *** NEW: Restored Email Icon *** -->
-                    <a href="mailto:support@cybertech.com" class="social-icon email">
+                    <a href="mailto:decodelabs.tech@gmail.com" class="social-icon email">
                         <div class="icon-container">
                             <svg viewBox="0 0 24 24" fill="currentColor" class="h-8 w-8 text-white" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path>
@@ -1323,14 +1367,16 @@
                         CSS components is crafted to boost your development speed and improve user experience.</p>
                     <p class="mt-4">From UI design systems to automation-ready layouts, PrebuiltUI empowers you to build
                         beautifully and scale effortlessly.</p>
-                    <button class="flex items-center gap-2 mt-8 hover:-translate-y-0.5 transition bg-gradient-to-r from-indigo-600 to-[#8A7DFF] py-3 px-8 rounded-full text-white">
-                        <span>Read more</span>
-                        <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
-                                fill="#fff" />
-                        </svg>
-                    </button>
+                    <a href="https://www.linkedin.com/company/decodelabs_official/" target="_blank" rel="noopener noreferrer">
+                        <button class="flex items-center gap-2 mt-8 hover:-translate-y-0.5 transition bg-gradient-to-r from-indigo-600 to-[#8A7DFF] py-3 px-8 rounded-full text-white">
+                            <span>Join on LinkedIn</span>
+                            <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12.53 6.53a.75.75 0 0 0 0-1.06L7.757.697a.75.75 0 1 0-1.06 1.06L10.939 6l-4.242 4.243a.75.75 0 0 0 1.06 1.06zM0 6v.75h12v-1.5H0z"
+                                    fill="#fff" />
+                            </svg>
+                        </button>
+                    </a>
                 </div>
             </section>
             <!-- ### END OF REPLACED CONTENT ### -->
@@ -1343,7 +1389,7 @@
                     <!-- Column 1: Brand -->
                     <div class="md:col-span-2">
                         <h3 class="text-2xl font-bold text-white mb-4">
-                           <span class="text-cyan-400">Cyber</span>Tech
+                           <span class="text-cyan-400">Decode</span> Labs
                         </h3>
                         <p class="text-gray-400 max-w-sm">
                             Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
@@ -1366,7 +1412,7 @@
                         <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
                         <ul class="space-y-2">
                             <li><a href="#about-us" id="footer-abt-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#team" id="footer-abt-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
                             <li><a href="#contact-us" id="footer-abt-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
                             <li><a href="#privacy-policy" id="footer-abt-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
                         </ul>
@@ -1376,7 +1422,7 @@
                 <hr class="border-t border-slate-700 my-8"/>
 
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
-                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
                     <!-- Social Icons (SVG Placeholders) -->
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="hover:text-cyan-400 transition-colors">
@@ -1394,6 +1440,140 @@
         </footer>
     </div>
     <!-- --- End of About Us Page --- -->
+
+
+    <!-- #################################### -->
+    <!-- ### NEW: SCROLL TO TOP BUTTON    ### -->
+    <!-- #################################### -->
+    <button id="scroll-to-top-btn" 
+            class="fixed bottom-8 right-8 z-40 bg-cyan-500 text-white p-3 rounded-full shadow-lg shadow-cyan-500/50 
+                   transition-all duration-300 opacity-0 translate-y-10 pointer-events-none 
+                   hover:bg-cyan-400 hover:shadow-cyan-glow hover:-translate-y-1"
+            aria-label="Scroll to top">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+
+    <!-- #################################### -->
+    <!-- ### NEW: OUR TEAM PAGE (hidden)  ### -->
+    <!-- #################################### -->
+    <div id="team-page" class="hidden">
+        
+        <!-- Page Header -->
+        <header class="py-6 px-4 md:px-8">
+             <nav class="container mx-auto flex justify-between items-center relative">
+                 <!-- Back arrow on the left -->
+                 <button id="back-btn-team" class="text-white font-semibold p-2 rounded-lg
+                                 transform transition-all duration-300
+                                 hover:bg-slate-700 absolute left-0">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                     </svg>
+                 </button>
+                 <!-- Page title (centered) -->
+                 <div class="text-2xl font-bold text-white mx-auto">
+                     <span class="text-cyan-400">Our</span> Team
+                 </div>
+            </nav>
+        </header>
+
+        <!-- Page Main Content -->
+        <!-- UPDATED: Added padding top to create space -->
+        <main class="container mx-auto px-4 pt-8 pb-8 flex flex-col items-center justify-start min-h-[60vh]">
+            
+            <!-- UPDATED: Added margin bottom for spacing -->
+            <div class="text-center mb-20 max-w-4xl mx-auto relative z-20">
+                <!-- UPDATED: Increased margin bottom -->
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6" style="transform: perspective(800px) rotateX(-8deg); transform-style: preserve-3d;">
+                    Minds Behind the <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Machine</span>
+                </h1>
+                
+                <!-- Motivational Text with bright visible colors and stronger 3D transform -->
+                <p class="text-2xl md:text-3xl text-white font-bold leading-relaxed px-4 mb-6" style="text-shadow: 0 0 20px rgba(6, 182, 212, 0.8); transform: perspective(800px) rotateX(-6deg); transform-style: preserve-3d;">
+                    Meet the visionaries, innovators, and dreamers who turn impossible ideas into reality.
+                </p>
+                <p class="text-xl md:text-2xl font-semibold leading-relaxed px-4" style="color: #22d3ee; transform: perspective(800px) rotateX(-4deg); transform-style: preserve-3d;">
+                    Together, we're not just building technology—we're shaping the future, one breakthrough at a time.
+                </p>
+            </div>
+
+            <!-- Fanned Cards Container (JS injects content here) -->
+            <div id="team-cards-container" class="team-card-container relative w-full flex items-center justify-center mb-32">
+                <!-- Cards injected by JS -->
+            </div>
+
+            <!-- Join Team Button -->
+            <div class="text-center mt-8">
+                <h3 class="text-2xl font-bold text-white mb-2">Ready to Shape the Future?</h3>
+                <p class="text-cyan-400 text-lg font-medium mb-4">Bring your unique perspective to our team.</p>
+                
+                <!-- REMOVED: Extended description (~10 lines) paragraph -->
+                
+                <button onclick="window.location.hash='#careers'" class="px-8 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-lg shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transform hover:-translate-y-1 transition-all duration-300">
+                    Join Our Team
+                </button>
+            </div>
+            
+        </main>
+        
+        <!-- --- Footer for Team Page --- -->
+        <footer class="mt-24">
+            <div class="glass-card container mx-auto rounded-t-2xl p-8 md:p-12">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <!-- Column 1: Brand -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-2xl font-bold text-white mb-4">
+                           <span class="text-cyan-400">Decode</span> Labs
+                        </h3>
+                        <p class="text-gray-400 max-w-sm">
+                            Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
+                        </p>
+                    </div>
+
+                    <!-- Column 2: Explore Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Explore</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#home" id="footer-team-home" class="text-gray-400 hover:text-cyan-400 transition-colors">Home</a></li>
+                            <li><a href="#" id="footer-team-verification" class="text-gray-400 hover:text-cyan-400 transition-colors">Verification</a></li>
+                            <li><a href="#internships" id="footer-team-internships" class="text-gray-400 hover:text-cyan-400 transition-colors">Internships</a></li>
+                            <li><a href="#careers" id="footer-team-careers" class="text-gray-400 hover:text-cyan-400 transition-colors">Careers</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Company Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#about-us" id="footer-team-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
+                            <li><a href="#team" id="footer-team-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <li><a href="#contact-us" id="footer-team-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
+                            <li><a href="#privacy-policy" id="footer-team-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="border-t border-slate-700 my-8"/>
+
+                <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
+                    <div class="flex space-x-4 mt-4 md:mt-0">
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.75,5.9 11.75,8.25C11.75,8.58 11.79,8.92 11.86,9.24C8.28,9.06 5.1,7.38 2.9,4.79C2.53,5.42 2.36,6.16 2.36,6.93C2.36,8.47 3.11,9.85 4.17,10.69C3.49,10.67 2.86,10.49 2.3,10.2C2.3,10.22 2.3,10.24 2.3,10.26C2.3,12.4 3.86,14.18 5.88,14.58C5.5,14.68 5.1,14.71 4.7,14.71C4.42,14.71 4.15,14.68 3.89,14.63C4.46,16.34 6.08,17.56 8.1,17.6C6.55,18.81 4.67,19.53 2.63,19.53C2.27,19.53 1.91,19.51 1.56,19.46C3.61,20.81 6.04,21.66 8.7,21.66C16.01,21.66 20.24,15.68 20.24,10.3C20.24,10.13 20.24,9.96 20.23,9.79C20.97,9.26 21.66,8.61 22.2,7.86C21.49,8.19 20.73,8.42 19.92,8.53C20.7,8.03 21.3,7.2 21.58,6.24C21.51,6.17 22.46,6 22.46,6Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22,12C22,6.48 17.52,2 12,2S2,6.48 2,12C2,16.85 5.64,20.79 10.21,21.82V14.16H7.3V12H10.21V9.92C10.21,7.03 12,5.34 14.65,5.34C15.95,5.34 17.28,5.55 17.28,5.55V8.13H15.9C14.5,8.13 14.12,9.1 14.12,9.92V12H17.1L16.63,14.16H14.12V21.82C18.36,20.79 22,16.85 22,12Z" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-cyan-400 transition-colors">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M7.07,18.28C7.5,17.38 10.12,16.5 12,16.5C13.88,16.5 16.5,17.38 16.93,18.28C15.57,19.36 13.86,20 12,20C10.14,20 8.43,19.36 7.07,18.28M18.36,16.83C16.93,15.09 13.8,14.5 12,14.5C10.2,14.5 7.07,15.09 5.64,16.83C4.62,15.49 4,13.82 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,13.82 19.38,15.49 18.36,16.83M12,6C10.06,6 8.5,7.56 8.5,9.5C8.5,11.44 10.06,13 12,13C13.94,13 15.5,11.44 15.5,9.5C15.5,7.56 13.94,6 12,6Z" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 
 
     <!-- ######################################## -->
@@ -1420,8 +1600,8 @@
             <div class="privacy-content max-w-4xl mx-auto">
                 <h2>Privacy Policy</h2>
                 <p>Last updated on September 12, 2025</p>
-                <p>Thank you for choosing to be part of our community at CyberTech Nexus ("Company," "We," "Us," or "Our"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at support@cybertech.com.</p>
-                <p>This privacy notice describes how we might use your information if you: Visit our website at <a href="#home">https://www.cybertechnexus.com</a> or Engage with us in other related ways ― including any sales, marketing, or events.</p>
+                <p>Thank you for choosing to be part of our community at Decode Labs ("Company," "We," "Us," or "Our"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at support@decodelabs.com.</p>
+                <p>This privacy notice describes how we might use your information if you: Visit our website at <a href="#home">https://www.decodelabs.com</a> or Engage with us in other related ways ― including any sales, marketing, or events.</p>
                 <p>In this privacy notice, if we refer to:</p>
                 <ul>
                     <li><strong>"Website,"</strong> we are referring to any website of ours that references or links to this policy</li>
@@ -1438,7 +1618,7 @@
                 <p>This privacy policy ("Policy") describes Our policies and procedures on the collection, use, storage and disclosure of any information including, business or personal information provided by You while using Our Website.</p>
                 
                 <h3>What Information Do We Collect?</h3>
-                <p>CyberTech Nexus collects personal information that you voluntarily provide to us when you register on the Website, express an interest in obtaining information about us or our products and services, when you participate in activities on the Website or otherwise when you contact us.</p>
+                <p>Decode Labs collects personal information that you voluntarily provide to us when you register on the Website, express an interest in obtaining information about us or our products and services, when you participate in activities on the Website or otherwise when you contact us.</p>
                 <p>The personal information that we collect depends on the context of your interactions with us and the Website, the choices you make and the products and features you use. The personal information we collect may include the following: Personal Information such as, but not limited to, Name, Email Id, Mobile number, Institution, Password, Age, Address, etc,</p>
                 <p><strong>Payment Data-</strong> We may collect data necessary to process your payment if you make purchases, such as your payment instrument number (such as a credit card number), and the security code associated with your payment instrument.</p>
                 <p>All personal information that you provide to us must be true, complete and accurate, and you must notify us of any changes to such personal information. If you choose to post messages on our message boards, chat rooms or other message areas or leave feedback or if you use voice commands to shop on the Platform, we will collect that information you provide to us. We retain this information as necessary to resolve disputes, provide customer support and troubleshoot problems as permitted by law.</p>
@@ -1453,7 +1633,7 @@
                 <p>We use the information we collect or receive:</p>
                 <ul>
                     <li><strong>To facilitate account creation and logon process.</strong> If you choose to link your account with us to a third-party account (such as your Google or Facebook account), we use the information you allowed us to collect from those third parties to facilitate account creation and logon process for the performance of the contract.</li>
-                    <li><strong>To post testimonials.</strong> We post testimonials on our Website that may contain personal information. Prior to posting a testimonial, we will obtain your consent to use your name and the content of the testimonial. If you wish to update or delete your testimonial, please contact us at support@cybertech.com and be sure to include your name, testimonial location, and contact information.</li>
+                    <li><strong>To post testimonials.</strong> We post testimonials on our Website that may contain personal information. Prior to posting a testimonial, we will obtain your consent to use your name and the content of the testimonial. If you wish to update or delete your testimonial, please contact us at support@decodelabs.com and be sure to include your name, testimonial location, and contact information.</li>
                     <li><strong>Request feedback.</strong> We may use your information to request feedback and to contact you about your use of our Website.</li>
                     <li>To monitor, improve and administer our Website.</li>
                     <li>To conduct research and analysis.</li>
@@ -1471,7 +1651,7 @@
 
                 <h3>Will Your Information Be Shared With Anyone?</h3>
                 <p>We use the information to understand Your needs and accordingly facilitate Our services and route You through the relevant information that meets Your need. We do not sell, rent, trade or exchange any personally identifying information of Our Users. We may provide the Information to Our affiliates and service providers under contract (such as customer care, data analytics) to support the operation of the Website and Our Services. To the extent we use Your personal information to market to You, we will provide You the ability to opt-out of such uses.</p>
-                <p>We do not sell, rent or otherwise provide your personal or business information to third parties except as provided in this policy. We may share Your information with third parties with Your prior consent and in such an event, the third parties' use of Your information will be bound by the Policy. Your information may be stored in locations outside the direct control of CyberTech Nexus (for instance, on servers or databases co-located with hosting providers).</p>
+                <p>We do not sell, rent or otherwise provide your personal or business information to third parties except as provided in this policy. We may share Your information with third parties with Your prior consent and in such an event, the third parties' use of Your information will be bound by the Policy. Your information may be stored in locations outside the direct control of Decode Labs (for instance, on servers or databases co-located with hosting providers).</p>
                 <p>We may disclose Your information to service providers involved in operating Our business. This includes payment providers, third party servers, email service providers and professionals such as accountants and lawyers. We reserve the right to disclose your personal information in the scope and in situations as required by the law and when we believe in good faith that such disclosure is necessary to protect our rights, to report suspected illegal activity, comply with judicial proceedings, court orders or decisions, or legal process served on our website.</p>
 
                 <h3>Do We Use Cookies and Other Tracking Technologies?</h3>
@@ -1484,7 +1664,7 @@
                 <p>When we have no ongoing legitimate business need to process your personal information, we will either delete or anonymize such information, or, if this is not possible (for example, because your personal information has been stored in backup archives), then we will securely store your personal information and isolate it from any further processing until deletion is possible.</p>
 
                 <h3>Your Choices About Your Information</h3>
-                <p>You may, of course, decline to submit personally identifiable information through the Website, in which case CyberTech Nexus may not be able to provide certain services to you. In addition, you may update or correct your account information and email preferences at any time by logging in to your account. If you would like us to remove your personally identifiable information from our database, please send a request to support@cybertech.com.</p>
+                <p>You may, of course, decline to submit personally identifiable information through the Website, in which case Decode Labs may not be able to provide certain services to you. In addition, you may update or correct your account information and email preferences at any time by logging in to your account. If you would like us to remove your personally identifiable information from our database, please send a request to support@decodelabs.com.</p>
                 <p>We are not responsible for revising or removing your personally identifiable information obtained by any third party who has previously been provided your information by us in accordance with this policy or any third party to whom you have provided such information (whether by sharing your login and password, or otherwise).</p>
 
                 <h3>Links to Third Party Sites</h3>
@@ -1508,7 +1688,7 @@
                 <p>Most web browsers and some mobile operating systems and mobile applications include a Do-Not-Track ("DNT") feature or setting you can activate to signal your privacy preference not to have data about your online browsing activities monitored and collected. At this stage no uniform technology standard for recognizing and implementing DNT signals has been finalized. As such, we do not currently respond to DNT browser signals or any other mechanism that automatically communicates your choice not to be tracked online. If a standard for online tracking is adopted that we must follow in the future, we will inform you about that practice in a revised version of this privacy notice.</p>
 
                 <h3>Exclusion</h3>
-                <p>This Policy does not apply to any information other than such information collected otherwise. This Policy shall not apply to any unsolicited information You provide Us through this Website or through any other means. This includes, but is not limited to, information posted to any public areas of the Website. All such unsolicited information shall be deemed to be non-confidential and CyberTech Nexus shall be free to use, disclose such unsolicited information without limitation</p>
+                <p>This Policy does not apply to any information other than such information collected otherwise. This Policy shall not apply to any unsolicited information You provide Us through this Website or through any other means. This includes, but is not limited to, information posted to any public areas of the Website. All such unsolicited information shall be deemed to be non-confidential and Decode Labs shall be free to use, disclose such unsolicited information without limitation</p>
 
                 <h3>Severability</h3>
                 <p>We have made every effort to ensure that this Policy adheres with the applicable laws. The invalidity or unenforceability of any part of this Policy shall not prejudice or affect the validity or enforceability of the remainder of this Policy.</p>
@@ -1517,16 +1697,16 @@
                 <p>This Policy shall be governed by and construed in accordance with the laws of India and the courts at Bengaluru, Karnataka shall have exclusive jurisdiction in relation to any disputes arising out of or in connection with this Policy.</p>
 
                 <h3>Foreign Jurisdiction</h3>
-                <p>CyberTech Nexus makes no representation that the content contained in the Website is appropriate or to be used anywhere outside of India. The information provided on or through the contents of the Website is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject the Company to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to theT-extent local laws are applicable.</p>
+                <p>Decode Labs makes no representation that the content contained in the Website is appropriate or to be used anywhere outside of India. The information provided on or through the contents of the Website is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject the Company to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to theT-extent local laws are applicable.</p>
 
                 <h3>Changes to This Privacy Policy</h3>
                 <p>Please check our Privacy Policy periodically for changes. We may update this privacy notice from time to time. The updated version will be indicated by an updated "Revised" date and the updated version will be effective as soon as it is accessible. If we make material changes to this privacy notice, we may notify you either by prominently posting a notice of such changes or by directly sending you a notification. We encourage you to review this privacy notice frequently to be informed of how we are protecting your information.</p>
 
                 <h3>Consent Withdrawal, Data Download & Data Removal Requests</h3>
-                <p>To withdraw your consent, or to request the download or delete your data with us for any or all our products & services at any time, please email to support@cybertech.com.</p>
+                <p>To withdraw your consent, or to request the download or delete your data with us for any or all our products & services at any time, please email to support@decodelabs.com.</p>
 
                 <h3>Contact Information:</h3>
-                <p>For any questions or concerns regarding this Privacy Policy, please contact CyberTech Nexus at support@cybertech.com.</p>
+                <p>For any questions or concerns regarding this Privacy Policy, please contact Decode Labs at support@decodelabs.com.</p>
                 
                 <!-- This link is now redundant because of the header arrow -->
                 <!-- <a href="#home" id="back-to-policies-btn" class="inline-block mt-8 text-cyan-400 hover:text-cyan-300 transition-colors">
@@ -1542,7 +1722,7 @@
                     <!-- Column 1: Brand -->
                     <div class="md:col-span-2">
                         <h3 class="text-2xl font-bold text-white mb-4">
-                           <span class="text-cyan-400">Cyber</span>Tech
+                           <span class="text-cyan-400">Decode</span> Labs
                         </h3>
                         <p class="text-gray-400 max-w-sm">
                             Pioneering the next generation of robotics, artificial intelligence, and 3D simulation to build a better future.
@@ -1565,7 +1745,8 @@
                         <h4 class="text-lg font-semibold text-white mb-4">Company</h4>
                         <ul class="space-y-2">
                             <li><a href="#about-us" id="footer-pri-about" class="text-gray-400 hover:text-cyan-400 transition-colors">About Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
+                            <!-- FIX: Added href="#team" and ID -->
+                            <li><a href="#team" id="footer-pri-team" class="text-gray-400 hover:text-cyan-400 transition-colors">Our Team</a></li>
                             <li><a href="#contact-us" id="footer-pri-contact" class="text-gray-400 hover:text-cyan-400 transition-colors">Contact</a></li>
                             <li><a href="#privacy-policy" id="footer-pri-privacy" class="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a></li>
                         </ul>
@@ -1575,7 +1756,7 @@
                 <hr class="border-t border-slate-700 my-8"/>
 
                 <div class="flex flex-col md:flex-row justify-between items-center text-gray-500">
-                    <p>&copy; 2025 CyberTech Nexus. All rights reserved.</p>
+                    <p>&copy; 2025 Decode Labs. All rights reserved.</p>
                     <!-- Social Icons (SVG Placeholders) -->
                     <div class="flex space-x-4 mt-4 md:mt-0">
                         <a href="#" class="hover:text-cyan-400 transition-colors">
@@ -1599,6 +1780,69 @@
     <!-- ###       CORE JAVASCRIPT      ### -->
     <!-- #################################### -->
     <script type="module">
+        
+        // ============================================
+        // === IMAGE CONFIGURATION SECTION ===
+        // ============================================
+        // Change image URLs here for all internship programs
+        const INTERNSHIP_IMAGES = {
+            'Artificial Intelligence (AI)': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop',
+            'Full Stack development': 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=225&fit=crop',
+            'Python Programming': 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=400&h=225&fit=crop',
+            'Data Science': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop',
+            'Data Analytics': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop',
+            'Java programming': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=225&fit=crop',
+            'Cyber Security': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=225&fit=crop',
+            'Cloud Computing (AWS/Azure)': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=225&fit=crop',
+            'UI/UX design': 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=225&fit=crop',
+            'Digital Marketing': 'https://images.unsplash.com/photo-1557838923-2985c318be48?w=400&h=225&fit=crop',
+            'Stock Market Trading and Analysis': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=225&fit=crop',
+            'AutoCAD': 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=225&fit=crop',
+            'Internet of things (IOT)': 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=400&h=225&fit=crop',
+            'Generative AI': 'https://images.unsplash.com/photo-1696258686454-60082b2c33e2?w=400&h=225&fit=crop',
+            'Frontend development': 'https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?w=400&h=225&fit=crop',
+            'Backend development': 'https://images.unsplash.com/photo-1599507593499-a3f7d7d97667?w=400&h=225&fit=crop',
+            'DevOps': 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=400&h=225&fit=crop',
+            'Blockchain technology': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=225&fit=crop',
+            'Prompt engineering': 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=400&h=225&fit=crop',
+            'Robotics and Automation': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=225&fit=crop'
+        };
+
+        // Change image URLs here for all career paths
+        const CAREER_IMAGES = {
+            'Data Analyst': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=225&fit=crop',
+            'Cybersecurity Analyst': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=225&fit=crop',
+            'ML Engineer': 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=400&h=225&fit=crop',
+            'Software Developer': 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=400&h=225&fit=crop',
+            'Cloud Architect': 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400&h=225&fit=crop',
+            'UI/UX Designer': 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=225&fit=crop',
+            'AI Specialist': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop',
+            'Network Engineer': 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=225&fit=crop',
+            'DevOps Engineer': 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=400&h=225&fit=crop',
+            'Robotics Engineer': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=225&fit=crop',
+            'Data Scientist': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop',
+            'Blockchain Developer': 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=225&fit=crop',
+            'Game Developer': 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=225&fit=crop',
+            'Systems Analyst': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=225&fit=crop',
+            'Business Analyst': 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=225&fit=crop',
+            'Quantum Researcher': 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=225&fit=crop',
+            'AR/VR Developer': 'https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=400&h=225&fit=crop',
+            'IT Manager': 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=225&fit=crop',
+            'Security Consultant': 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=225&fit=crop',
+            'Hardware Engineer': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=225&fit=crop'
+        };
+
+        // Helper function to get image URL for a course
+        function getInternshipImage(courseName) {
+            return INTERNSHIP_IMAGES[courseName] || 'https://placehold.co/400x225/0f172a/06b6d4?text=' + encodeURIComponent(courseName);
+        }
+
+        // Helper function to get image URL for a career
+        function getCareerImage(careerName) {
+            return CAREER_IMAGES[careerName] || 'https://placehold.co/400x225/0f172a/94a3b8?text=' + encodeURIComponent(careerName);
+        }
+
+        // ============================================
         
         // --- Mock Certificate Database ---
         const certificateDatabase = {
@@ -1954,6 +2198,10 @@
             const aboutUsPage = document.getElementById('about-us-page');
             const backBtnAbout = document.getElementById('back-btn-about');
 
+            // --- NEW: Team Page Elements ---
+            const teamPage = document.getElementById('team-page');
+            const backBtnTeam = document.getElementById('back-btn-team');
+
             const verifyBtn = document.getElementById('verify-btn');
             const verificationResult = document.getElementById('verification-result');
             const certificateInput = document.getElementById('certificate-id');
@@ -1961,67 +2209,86 @@
             // --- UPDATED: Footer Link Arrays ---
             const homeFooterLinks = [
                 document.getElementById('footer-main-home'),
-                document.getElementById('footer-int-home'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-home'), // <-- NEW
+                document.getElementById('footer-int-home'),
+                document.getElementById('footer-intpage-home'),
                 document.getElementById('footer-car-home'),
                 document.getElementById('footer-pri-home'),
-                document.getElementById('footer-abt-home')
+                document.getElementById('footer-abt-home'),
+                document.getElementById('footer-team-home')
             ];
  
             const verificationFooterLinks = [
                 document.getElementById('footer-main-verification'),
-                document.getElementById('footer-int-verification'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-verification'), // <-- NEW
+                document.getElementById('footer-int-verification'),
+                document.getElementById('footer-intpage-verification'),
                 document.getElementById('footer-car-verification'),
                 document.getElementById('footer-pri-verification'),
-                document.getElementById('footer-abt-verification')
+                document.getElementById('footer-abt-verification'),
+                document.getElementById('footer-team-verification')
             ];
  
             const internshipFooterLinks = [
                 document.getElementById('footer-main-internships'),
-                document.getElementById('footer-int-internships'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-internships'), // <-- NEW
+                document.getElementById('footer-int-internships'),
+                document.getElementById('footer-intpage-internships'),
                 document.getElementById('footer-car-internships'),
                 document.getElementById('footer-pri-internships'),
-                document.getElementById('footer-abt-internships')
+                document.getElementById('footer-abt-internships'),
+                document.getElementById('footer-team-internships')
             ];
  
             const careerFooterLinks = [
                 document.getElementById('footer-main-careers'),
-                document.getElementById('footer-int-careers'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-careers'), // <-- NEW
+                document.getElementById('footer-int-careers'),
+                document.getElementById('footer-intpage-careers'),
                 document.getElementById('footer-car-careers'),
                 document.getElementById('footer-pri-careers'),
-                document.getElementById('footer-abt-careers')
+                document.getElementById('footer-abt-careers'),
+                document.getElementById('footer-team-careers')
             ];
  
             const contactFooterLinks = [
                 document.getElementById('footer-main-contact'),
-                document.getElementById('footer-int-contact'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-contact'), // <-- NEW
+                document.getElementById('footer-int-contact'),
+                document.getElementById('footer-intpage-contact'),
                 document.getElementById('footer-car-contact'),
                 document.getElementById('footer-pri-contact'),
-                document.getElementById('footer-abt-contact')
+                document.getElementById('footer-abt-contact'),
+                document.getElementById('footer-team-contact')
             ];
  
             // --- NEW: Privacy Policy Footer Links ---
             const privacyFooterLinks = [
                 document.getElementById('footer-main-privacy'),
-                document.getElementById('footer-int-privacy'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-privacy'), // <-- NEW
+                document.getElementById('footer-int-privacy'),
+                document.getElementById('footer-intpage-privacy'),
                 document.getElementById('footer-car-privacy'),
                 document.getElementById('footer-pri-privacy'),
-                document.getElementById('footer-abt-privacy')
+                document.getElementById('footer-abt-privacy'),
+                document.getElementById('footer-team-privacy')
             ];
 
             // --- NEW: About Us Footer Links ---
             const aboutUsFooterLinks = [
                 document.getElementById('footer-main-about'),
-                document.getElementById('footer-int-about'), // <-- This was from the main page footer
-                document.getElementById('footer-intpage-about'), // <-- NEW
+                document.getElementById('footer-int-about'),
+                document.getElementById('footer-intpage-about'),
                 document.getElementById('footer-car-about'),
                 document.getElementById('footer-pri-about'),
-                document.getElementById('footer-abt-about')
+                document.getElementById('footer-abt-about'),
+                document.getElementById('footer-team-about')
+            ];
+
+            // --- NEW: Team Footer Links ---
+            const teamFooterLinks = [
+                document.getElementById('footer-int-team'), 
+                document.getElementById('footer-intpage-team'), 
+                document.getElementById('footer-car-team'),
+                document.getElementById('footer-pri-team'),
+                document.getElementById('footer-abt-team'),
+                document.getElementById('footer-team-team'),
+                // Note: Main footer doesn't have an ID for team, we'll handle it via href selector if needed
+                // or just rely on the updated HTML structure where we added IDs or Hrefs
             ];
 
 
@@ -2031,12 +2298,13 @@
                 window.location.hash = '#home';
             };
             if (navHome) navHome.addEventListener('click', goToHome);
-            if (backBtnInternships) backBtnInternships.addEventListener('click', goToHome); // <-- FIX
+            if (backBtnInternships) backBtnInternships.addEventListener('click', goToHome);
             if (backBtnCareers) backBtnCareers.addEventListener('click', goToHome);
             if (backBtnContact) backBtnContact.addEventListener('click', goToHome);
             if (backBtnPrivacy) backBtnPrivacy.addEventListener('click', goToHome);
             if (backBtnAbout) backBtnAbout.addEventListener('click', goToHome);
-            // if (backToPoliciesBtn) backToPoliciesBtn.addEventListener('click', goToHome); // REMOVED
+            if (backBtnTeam) backBtnTeam.addEventListener('click', goToHome);
+            
             homeFooterLinks.forEach(link => {
                 if (link) link.addEventListener('click', goToHome);
             });
@@ -2092,6 +2360,22 @@
             };
             aboutUsFooterLinks.forEach(link => {
                 if(link) link.addEventListener('click', goToAboutUs);
+            });
+
+            // --- NEW: Team Links ---
+            const goToTeam = (e) => {
+                e.preventDefault();
+                window.location.hash = '#team';
+            };
+            
+            // Add listener to specific IDs
+            teamFooterLinks.forEach(link => {
+                if(link) link.addEventListener('click', goToTeam);
+            });
+            
+            // Add listener to ANY link with href="#team" (catches the main footer and any others missed)
+            document.querySelectorAll('a[href="#team"]').forEach(link => {
+                link.addEventListener('click', goToTeam);
             });
 
 
@@ -2173,27 +2457,26 @@
             const contactUsPage = document.getElementById('contact-us-page');
             const privacyPolicyPage = document.getElementById('privacy-policy-page');
             const aboutUsPage = document.getElementById('about-us-page');
+            const teamPage = document.getElementById('team-page');
             
             const hash = window.location.hash;
  
             // Hide all pages by default
-            // ### FIX: Added null checks for all page elements to prevent errors ###
             if (mainContent) mainContent.classList.add('hidden');
             if (internshipsPage) internshipsPage.classList.add('hidden');
             if (careersPage) careersPage.classList.add('hidden');
             if (contactUsPage) contactUsPage.classList.add('hidden'); 
             if (privacyPolicyPage) privacyPolicyPage.classList.add('hidden');
             if (aboutUsPage) aboutUsPage.classList.add('hidden');
+            if (teamPage) teamPage.classList.add('hidden');
  
             // Show the correct page based on the hash
             switch (hash) {
                 case '#internships':
-                    // ### FIX: Added null check ###
                     if (internshipsPage) internshipsPage.classList.remove('hidden');
                     window.scrollTo(0, 0);
                     break;
                 case '#careers':
-                    // ### FIX: Added null check ###
                     if (careersPage) careersPage.classList.remove('hidden');
                     window.scrollTo(0, 0);
                     break;
@@ -2209,41 +2492,122 @@
                     if (aboutUsPage) aboutUsPage.classList.remove('hidden');
                     window.scrollTo(0, 0);
                     break;
+                case '#team':
+                    if (teamPage) {
+                        teamPage.classList.remove('hidden');
+                        checkTeamAnimation(); // Trigger the fanning animation
+                    }
+                    window.scrollTo(0, 0);
+                    break;
                 case '#home':
                 default:
-                    // ### FIX: Added null check ###
                     if (mainContent) mainContent.classList.remove('hidden');
                     window.scrollTo(0, 0);
                     break;
             }
-
-            // Update header AFTER switching page
-            // updateHeaderStyle(); // <-- REMOVED THIS CALL
         }
         
+        // --- NEW: Build Team Cards (Fanned 3D Effect) ---
+        function buildTeamSection() {
+            const teamMembers = [
+                { name: "Johnathan Doe", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300&auto=format&fit=crop" },
+                { name: "Jane Smith", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=300&auto=format&fit=crop" },
+                { name: "Peter Jones", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop" },
+                { name: "Sarah Williams", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=300&auto=format&fit=crop" },
+                { name: "Michael Brown", image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=300&auto=format&fit=crop" },
+                { name: "Emily Davis", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=300&auto=format&fit=crop" },
+                { name: "David Garcia", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=300&auto=format&fit=crop" },
+                // NEW MEMBER ADDED
+                { name: "Sophia Lee", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop" },
+            ];
+
+            const container = document.getElementById('team-cards-container');
+            if (!container) return;
+
+            const total = teamMembers.length;
+            const centerIndex = (total - 1) / 2;
+
+            container.innerHTML = ''; // Clear existing
+
+            teamMembers.forEach((member, index) => {
+                // Calculate position relative to center
+                const distanceFromCenter = index - centerIndex;
+                
+                // Spread width
+                const x = distanceFromCenter * 90; 
+                // Arch effect (center is higher than edges)
+                const y = Math.abs(distanceFromCenter) * 20; 
+                // Fan rotation
+                const rotate = distanceFromCenter * 8; 
+                
+                // Z-index: Center items on top
+                const zIndex = 50 - Math.abs(index - centerIndex);
+
+                // Create the card
+                const card = document.createElement('div');
+                card.className = 'team-card-item absolute w-36 h-48 md:w-48 md:h-64 rounded-xl overflow-hidden border-2 border-slate-700 bg-slate-800 shadow-xl';
+                
+                // Set custom properties for CSS transition
+                card.style.setProperty('--tx', `${x}px`);
+                card.style.setProperty('--ty', `${y}px`);
+                card.style.setProperty('--tr', `${rotate}deg`);
+                card.style.zIndex = zIndex;
+                
+                // Stagger transition
+                card.style.transitionDelay = `${index * 60}ms`;
+
+                // Add Image
+                const img = document.createElement('img');
+                img.src = member.image;
+                img.alt = member.name;
+                img.className = 'w-full h-full object-cover transition-transform duration-500';
+                img.onerror = function() { this.src = 'https://placehold.co/300x400/1e293b/ffffff?text=' + member.name.charAt(0); };
+
+                // REMOVED: Overlay with name creation block
+
+                card.appendChild(img);
+                // card.appendChild(overlay); // Removed overlay append
+                container.appendChild(card);
+            });
+        }
+
+        // --- NEW: Trigger Team Animation ---
+        function checkTeamAnimation() {
+            const container = document.getElementById('team-cards-container');
+            if (!container) return;
+            
+            // Remove first to reset if coming back
+            container.classList.remove('visible');
+            
+            // Small timeout to allow render before adding class
+            setTimeout(() => {
+                container.classList.add('visible');
+            }, 100);
+        }
+
         // --- Function to build the careers grid (for easy editing) ---
         function buildCareersGrid() {
             const careers = [
-                { title: 'Data Analyst', salary: '$90,000', jobs: '25,000+', imgText: 'Data+Analyst', imgColor: '94a3b8' },
-                { title: 'Cybersecurity Analyst', salary: '$110,000', jobs: '18,000+', imgText: 'Cybersecurity', imgColor: '06b6d4' },
-                { title: 'ML Engineer', salary: '$130,000', jobs: '12,000+', imgText: 'ML+Engineer', imgColor: 'ffffff' },
-                { title: 'Software Developer', salary: '$115,000', jobs: '30,000+', imgText: 'Developer', imgColor: '818cf8' },
-                { title: 'Cloud Architect', salary: '$140,000', jobs: '15,00g+', imgText: 'Cloud', imgColor: 'f0abfc' },
-                { title: 'UI/UX Designer', salary: '$95,000', jobs: '10,000+', imgText: 'UI%2FUX', imgColor: 'fbbf24' },
-                { title: 'AI Specialist', salary: '$135,000', jobs: '9,000+', imgText: 'AI', imgColor: 'a78bfa' },
-                { title: 'Network Engineer', salary: '$100,000', jobs: '14,000+', imgText: 'Network', imgColor: '34d399' },
-                { title: 'DevOps Engineer', salary: '$125,000', jobs: '16,000+', imgText: 'DevOps', imgColor: 'f87171' },
-                { title: 'Robotics Engineer', salary: '$120,000', jobs: '7,000+', imgText: 'Robotics', imgColor: '94a3b8' },
-                { title: 'Data Scientist', salary: '$130,000', jobs: '20,000+', imgText: 'Data+Scientist', imgColor: '06b6d4' },
-                { title: 'Blockchain Developer', salary: '$140,000', jobs: '5,000+', imgText: 'Blockchain', imgColor: 'ffffff' },
-                { title: 'Game Developer', salary: '$105,000', jobs: '6,000+', imgText: 'Game+Dev', imgColor: '818cf8' },
-                { title: 'Systems Analyst', salary: '$98,000', jobs: '11,000+', imgText: 'Systems', imgColor: 'f0abfc' },
-                { title: 'Business Analyst', salary: '$92,000', jobs: '22,000+', imgText: 'Business', imgColor: 'fbbf24' },
-                { title: 'Quantum Researcher', salary: '$150,000', jobs: '2,000+', imgText: 'Quantum', imgColor: 'a78bfa' },
-                { title: 'AR/VR Developer', salary: '$120,000', jobs: '4,000+', imgText: 'AR%2FVR', imgColor: '34d399' },
-                { title: 'IT Manager', salary: '$130,000', jobs: '19,000+', imgText: 'IT+Manager', imgColor: 'f87171' },
-                { title: 'Security Consultant', salary: '$115,000', jobs: '8,000+', imgText: 'Security', imgColor: '94a3b8' },
-                { title: 'Hardware Engineer', salary: '$112,000', jobs: '7,000+', imgText: 'Hardware', imgColor: '06b6d4' }
+                { title: 'Data Analyst', salary: '$90,000', jobs: '25,000+', description: 'Collects, cleans, and interprets data to help organizations make better decisions.' },
+                { title: 'Cybersecurity Analyst', salary: '$110,000', jobs: '18,000+', description: 'Protects networks and systems from cyber threats and security breaches.' },
+                { title: 'ML Engineer', salary: '$130,000', jobs: '12,000+', description: 'Designs and builds self-learning AI models for complex problem-solving.' },
+                { title: 'Software Developer', salary: '$115,000', jobs: '30,000+', description: 'Creates applications and software solutions for various platforms.' },
+                { title: 'Cloud Architect', salary: '$140,000', jobs: '15,000+', description: 'Designs and manages cloud infrastructure and services.' },
+                { title: 'UI/UX Designer', salary: '$95,000', jobs: '10,000+', description: 'Creates intuitive and visually appealing user interfaces.' },
+                { title: 'AI Specialist', salary: '$135,000', jobs: '9,000+', description: 'Develops artificial intelligence systems and algorithms.' },
+                { title: 'Network Engineer', salary: '$100,000', jobs: '14,000+', description: 'Designs and maintains computer network infrastructure.' },
+                { title: 'DevOps Engineer', salary: '$125,000', jobs: '16,000+', description: 'Bridges development and operations for continuous delivery.' },
+                { title: 'Robotics Engineer', salary: '$120,000', jobs: '7,000+', description: 'Designs and builds automated robotic systems.' },
+                { title: 'Data Scientist', salary: '$130,000', jobs: '20,000+', description: 'Analyzes complex data to extract insights and predictions.' },
+                { title: 'Blockchain Developer', salary: '$140,000', jobs: '5,000+', description: 'Builds decentralized applications and smart contracts.' },
+                { title: 'Game Developer', salary: '$105,000', jobs: '6,000+', description: 'Creates interactive entertainment experiences and games.' },
+                { title: 'Systems Analyst', salary: '$98,000', jobs: '11,000+', description: 'Analyzes and optimizes IT systems and processes.' },
+                { title: 'Business Analyst', salary: '$92,000', jobs: '22,000+', description: 'Bridges business needs with technical solutions.' },
+                { title: 'Quantum Researcher', salary: '$150,000', jobs: '2,000+', description: 'Researches quantum computing and its applications.' },
+                { title: 'AR/VR Developer', salary: '$120,000', jobs: '4,000+', description: 'Creates immersive augmented and virtual reality experiences.' },
+                { title: 'IT Manager', salary: '$130,000', jobs: '19,000+', description: 'Oversees IT operations and technology strategy.' },
+                { title: 'Security Consultant', salary: '$115,000', jobs: '8,000+', description: 'Provides expert security advice and solutions.' },
+                { title: 'Hardware Engineer', salary: '$112,000', jobs: '7,000+', description: 'Designs and develops computer hardware components.' }
             ];
 
             const grid = document.getElementById('careers-grid');
@@ -2254,15 +2618,15 @@
 
             // Loop and build cards
             careers.forEach(career => {
-                // --- *** FIXED 'src' TYPO AND BROKEN TEXT HERE *** ---
+                const imgUrl = getCareerImage(career.title);
                 const cardHTML = `
                 <div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/${career.imgColor}?text=${career.imgText}" alt="${career.title}" class="w-full h-48 object-cover"
-                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/${career.imgColor}?text=${career.imgText}'">
+                    <img src="${imgUrl}" alt="${career.title}" class="w-full h-48 object-cover"
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/94a3b8?text=${encodeURIComponent(career.title)}'">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-white mb-2">${career.title}</h3>
-                        <p classF="text-gray-300 mb-4 text-sm">
-                            Explore a career as a ${career.title.toLowerCase()} and shape the future of tech.
+                        <p class="text-gray-300 mb-4 text-sm">
+                            ${career.description}
                         </p>
                         <div class="text-sm">
                             <p class="text-gray-400">Median Salary: <span class="font-semibold text-gray-200">${career.salary}</span></p>
@@ -2278,28 +2642,26 @@
         // --- NEW: Function to build the internships grid ---
         function buildInternshipsGrid() {
             const internships = [
-                // From Homepage
-                { title: 'Robotics Engineering Intern', division: 'AI Division', imgText: 'AI+Division', imgColor: '06b6d4', description: 'Design, build, and test next-generation autonomous systems.' },
-                { title: 'Virtual Worlds Designer', division: '3D Simulation Lab', imgText: '3D+Simulation', imgColor: '06b6d4', description: 'Create photorealistic 3D environments for AI training.' },
-                { title: 'AI & ML Intern', division: 'Data Science', imgText: 'Data+Science', imgColor: '06b6d4', description: 'Analyze complex datasets from our neural core.' },
-                { title: 'Threat Analyst Intern', division: 'Cybersecurity', imgText: 'Cybersecurity', imgColor: '06b6d4', description: 'Monitor network traffic and identify security threats.' },
-                { title: 'Quantum Computing Intern', division: 'Hardware R&D', imgText: 'Hardware+R%26D', imgColor: '06b6d4', description: 'Assist researchers in developing quantum processors.' },
-                { title: 'Holo-Interface Designer', division: 'UX/UI Design', imgText: 'UX%2FUI+Design', imgColor: '06b6d4', description: 'Design intuitive 3D user interfaces for our holo-tech.' },
-                // New ones
-                { title: 'Neural Network Developer', division: 'AI Division', imgText: 'AI+Division', imgColor: 'a78bfa', description: 'Train deep learning models for pattern recognition.' },
-                { title: 'Autonomous Navigation', division: 'Robotics', imgText: 'Robotics', imgColor: 'a78bfa', description: 'Develop SLAM algorithms for our mobile robot fleet.' },
-                { title: 'Data Visualization Expert', division: 'Data Science', imgText: 'Data+Science', imgColor: 'fbbf24', description: 'Build interactive dashboards for complex datasets.' },
-                { title: 'Ethical Hacker', division: 'Cybersecurity', imgText: 'Cybersecurity', imgColor: 'fbbf24', description: 'Perform penetration testing on our core systems.' },
-                { title: 'Simulation Physicist', division: '3D Simulation Lab', imgText: '3D+Simulation', imgColor: 'f87171', description: 'Model real-world physics in virtual environments.' },
-                { title: 'Product Design Intern', division: 'UX/UI Design', imgText: 'UX%2FUI+Design', imgColor: 'f87171', description: 'Create user-flow mockups for new applications.' },
-                { title: 'Systems Administrator', division: 'IT Operations', imgText: 'IT+Ops', imgColor: '34d399', description: 'Manage and maintain our internal cloud infrastructure.' },
-                { title: 'Firmware Engineer', division: 'Hardware R&D', imgText: 'Hardware+R%26D', imgColor: '34d399', description: 'Write low-level code for custom hardware prototypes.' },
-                { title: 'Natural Language Proc.', division: 'AI Division', imgText: 'AI+Division', imgColor: '818cf8', description: 'Teach our AI to understand and process human language.' },
-                { title: 'VR Experience Developer', division: '3D Simulation Lab', imgText: '3D+Simulation', imgColor: '818cf8', description: 'Build immersive VR training and exploration tools.' },
-                { title: 'Network Security Intern', division: 'Cybersecurity', imgText: 'Cybersecurity', imgColor: 'f0abfc', description: 'Configure and monitor firewalls and intrusion systems.' },
-                { title: 'Database Architect Intern', division: 'Data Science', imgText: 'Data+Science', imgColor: 'f0abfc', description: 'Optimize and manage our petabyte-scale databases.' },
-                { title: '3D Asset Modeler', division: 'UX/UI Design', imgText: 'UX%2FUI+Design', imgColor: 'ffffff', description: 'Create detailed 3D models of assets for simulation.' },
-                { title: 'QA & Test Automation', division: 'Robotics', imgText: 'Robotics', imgColor: 'ffffff', description: 'Develop automated tests for robotic hardware and software.' }
+                { title: 'Artificial Intelligence (AI)', division: 'Internship', imgText: 'AI', imgColor: '06b6d4', description: 'Learn AI fundamentals, machine learning, and neural networks.' },
+                { title: 'Full Stack development', division: 'Internship', imgText: 'Full+Stack', imgColor: '06b6d4', description: 'Master frontend and backend technologies for complete web solutions.' },
+                { title: 'Python Programming', division: 'Internship', imgText: 'Python', imgColor: '06b6d4', description: 'Learn Python from basics to advanced programming concepts.' },
+                { title: 'Data Science', division: 'Internship', imgText: 'Data+Science', imgColor: '06b6d4', description: 'Analyze data, build models, and extract insights from complex datasets.' },
+                { title: 'Data Analytics', division: 'Internship', imgText: 'Data+Analytics', imgColor: '06b6d4', description: 'Transform raw data into meaningful insights and visualizations.' },
+                { title: 'Java programming', division: 'Internship', imgText: 'Java', imgColor: '06b6d4', description: 'Master Java programming for enterprise and mobile applications.' },
+                { title: 'Cyber Security', division: 'Internship', imgText: 'Cyber+Security', imgColor: 'a78bfa', description: 'Learn to protect systems and networks from digital attacks.' },
+                { title: 'Cloud Computing (AWS/Azure)', division: 'Internship', imgText: 'Cloud', imgColor: 'a78bfa', description: 'Master cloud platforms and infrastructure management.' },
+                { title: 'UI/UX design', division: 'Internship', imgText: 'UI%2FUX', imgColor: 'fbbf24', description: 'Create intuitive and visually appealing user interfaces.' },
+                { title: 'Digital Marketing', division: 'Internship', imgText: 'Digital+Marketing', imgColor: 'fbbf24', description: 'Learn modern digital marketing strategies and tools.' },
+                { title: 'Stock Market Trading and Analysis', division: 'Internship', imgText: 'Stock+Market', imgColor: 'f87171', description: 'Understand financial markets, trading, and investment strategies.' },
+                { title: 'AutoCAD', division: 'Internship', imgText: 'AutoCAD', imgColor: 'f87171', description: 'Master computer-aided design for engineering and architecture.' },
+                { title: 'Internet of things (IOT)', division: 'Internship', imgText: 'IOT', imgColor: '34d399', description: 'Build connected devices and smart systems.' },
+                { title: 'Generative AI', division: 'Internship', imgText: 'Gen+AI', imgColor: '34d399', description: 'Explore AI models that create content, from text to images.' },
+                { title: 'Frontend development', division: 'Internship', imgText: 'Frontend', imgColor: '818cf8', description: 'Build responsive and interactive user interfaces.' },
+                { title: 'Backend development', division: 'Internship', imgText: 'Backend', imgColor: '818cf8', description: 'Develop server-side logic and database management.' },
+                { title: 'DevOps', division: 'Internship', imgText: 'DevOps', imgColor: 'f0abfc', description: 'Learn continuous integration, deployment, and automation.' },
+                { title: 'Blockchain technology', division: 'Internship', imgText: 'Blockchain', imgColor: 'f0abfc', description: 'Understand decentralized systems and cryptocurrency.' },
+                { title: 'Prompt engineering', division: 'Internship', imgText: 'Prompt+Eng', imgColor: 'ffffff', description: 'Master the art of crafting effective AI prompts.' },
+                { title: 'Robotics and Automation', division: 'Internship', imgText: 'Robotics', imgColor: 'ffffff', description: 'Design and build automated systems and robots.' }
             ];
 
             const grid = document.getElementById('internships-grid');
@@ -2310,9 +2672,10 @@
 
             // Loop and build cards
             internships.forEach(intern => {
+                const imgUrl = getInternshipImage(intern.title);
                 const cardHTML = `
                 <div class="career-card glass-card rounded-2xl shadow-xl overflow-hidden">
-                    <img src="https://placehold.co/400x225/0f172a/${intern.imgColor}?text=${intern.imgText}" alt="${intern.title}" class="w-full h-48 object-cover"
+                    <img src="${imgUrl}" alt="${intern.title}" class="w-full h-48 object-cover"
                          onerror="this.onerror=null;this.src='https://placehold.co/400x225/0f172a/${intern.imgColor}?text=${intern.imgText}'">
                     <div class="p-6">
                         <span class="text-sm font-semibold text-cyan-400 uppercase">${intern.division}</span>
@@ -2320,11 +2683,12 @@
                         <p class="text-gray-300 mb-6 text-sm">
                             ${intern.description}
                         </p>
-                        <button class="mt-4 w-full bg-slate-700 text-cyan-300 font-semibold py-3 rounded-lg
+                        <!-- UPDATED BUTTON COLOR (JS Template) -->
+                        <a href="https://forms.gle/jfGZ7qznVYq59ZSd6" target="_blank" class="mt-4 w-full bg-cyan-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-cyan-500/40
                                         transform transition-all duration-300
-                                        hover:bg-slate-600 hover:text-cyan-200">
-                            Learn More
-                        </button>
+                                        hover:bg-cyan-400 hover:-translate-y-1 hover:shadow-cyan-glow block text-center">
+                            Apply Now
+                        </a>
                     </div>
                 </div>
                 `;
@@ -2332,19 +2696,185 @@
             });
         }
 
+        // --- NEW: Scroll To Top Logic ---
+        function setupScrollToTop() {
+            const scrollBtn = document.getElementById('scroll-to-top-btn');
+            if (!scrollBtn) return;
+
+            let inactivityTimeout;
+            let lastScrollY = window.scrollY;
+
+            const hideButton = () => {
+                scrollBtn.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollBtn.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            };
+
+            const showButton = () => {
+                scrollBtn.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+                scrollBtn.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+            };
+
+            const resetTimer = () => {
+                clearTimeout(inactivityTimeout);
+                // UPDATED: Changed to 400ms
+                inactivityTimeout = setTimeout(hideButton, 400);
+            };
+
+            const handleScroll = () => {
+                const currentScrollY = window.scrollY;
+                
+                // 1. If at top (less than 300px), always hide
+                if (currentScrollY <= 300) {
+                    hideButton();
+                    clearTimeout(inactivityTimeout);
+                    lastScrollY = currentScrollY;
+                    return;
+                }
+
+                // 2. Check scroll direction
+                const isScrollingUp = currentScrollY < lastScrollY;
+                const scrollDifference = Math.abs(currentScrollY - lastScrollY);
+
+                // "Disappear when someone scroll up for a little" (threshold > 10px to avoid jitter)
+                if (isScrollingUp && scrollDifference > 10) { 
+                    hideButton();
+                    clearTimeout(inactivityTimeout); // Clear timer as we forced hide
+                } else if (!isScrollingUp) {
+                    // Scrolling down: Show button
+                    showButton();
+                    resetTimer();
+                }
+                
+                lastScrollY = currentScrollY;
+            };
+            
+            // Mouse move interaction should show button (unless at top)
+            const handleMouseMove = () => {
+                if (window.scrollY > 300) {
+                    showButton();
+                    resetTimer();
+                }
+            };
+
+            // Trigger on scroll
+            window.addEventListener('scroll', handleScroll);
+            
+            // Trigger on mouse move
+            window.addEventListener('mousemove', handleMouseMove);
+
+            // Smooth scroll to top on click
+            scrollBtn.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // --- NEW: Inspirational Quote Rotation Logic ---
+        function setupQuoteRotation() {
+            const quotes = [
+                {
+                    text: "AI is like fire. It can cook your food, or it can burn down your house.",
+                    author: "Sam Altman",
+                    role: "CEO, OpenAI",
+                    image: "https://pbs.twimg.com/profile_images/804990434455887872/BG0Xh7Oa_400x400.jpg",
+                    gradient: "linear-gradient(135deg, #1a1a1a 0%, #2d4a2b 100%)"
+                },
+                {
+                    text: "I think it is possible for ordinary people to choose to be extraordinary.",
+                    author: "Elon Musk",
+                    role: "CEO, Tesla & SpaceX",
+                    image: "https://cdn.britannica.com/05/236505-050-17B6E34A/Elon-Musk-2022.jpg",
+                    gradient: "linear-gradient(135deg, #1a1a1a 0%, #3a2d4a 100%)"
+                },
+                {
+                    text: "Success is a lousy teacher. It seduces smart people into thinking they can't lose.",
+                    author: "Bill Gates",
+                    role: "Co-founder, Microsoft",
+                    image: "https://cdn.britannica.com/47/188747-050-1D34E743/Bill-Gates-2011.jpg",
+                    gradient: "linear-gradient(135deg, #1a1a1a 0%, #2d2a4a 100%)"
+                }
+            ];
+
+            let currentIndex = 0;
+            let isTransitioning = false;
+            const quoteBox = document.getElementById('quote-box');
+            const quoteText = document.getElementById('quote-text');
+            const quoteAuthor = document.getElementById('quote-author');
+            const quoteImage = document.getElementById('quote-image');
+
+            if (!quoteBox || !quoteText || !quoteAuthor || !quoteImage) return;
+
+            // Preload all images
+            const preloadedImages = [];
+            quotes.forEach((quote, index) => {
+                const img = new Image();
+                img.src = quote.image;
+                preloadedImages[index] = img;
+            });
+
+            function updateQuote() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+                
+                // Move to next quote
+                currentIndex = (currentIndex + 1) % quotes.length;
+                const quote = quotes[currentIndex];
+                
+                // Quick fade out
+                quoteText.style.opacity = '0';
+                quoteAuthor.style.opacity = '0';
+                quoteImage.style.opacity = '0';
+                
+                setTimeout(() => {
+                    // Update content
+                    quoteText.textContent = quote.text;
+                    quoteAuthor.innerHTML = `<p class="font-bold">${quote.author}</p><p class="text-sm">${quote.role}</p>`;
+                    quoteBox.style.background = quote.gradient;
+                    quoteImage.src = quote.image;
+                    quoteImage.alt = quote.author;
+                    
+                    // Quick fade in
+                    setTimeout(() => {
+                        quoteText.style.opacity = '1';
+                        quoteAuthor.style.opacity = '1';
+                        quoteImage.style.opacity = '1';
+                        isTransitioning = false;
+                    }, 50);
+                }, 300);
+            }
+
+            // Set faster transitions
+            quoteText.style.transition = 'opacity 0.3s ease-in-out';
+            quoteAuthor.style.transition = 'opacity 0.3s ease-in-out';
+            quoteImage.style.transition = 'opacity 0.3s ease-in-out';
+            quoteBox.style.transition = 'background 0.5s ease-in-out';
+
+            // Ensure initial state is visible
+            quoteText.style.opacity = '1';
+            quoteAuthor.style.opacity = '1';
+            quoteImage.style.opacity = '1';
+
+            // Start rotation
+            setInterval(updateQuote, 5000);
+        }
+
+        
+
         // Start everything on window load
         window.onload = () => {
             init(); // Start the 3D scene
             setupNavigation(); // Setup the page switching
             buildCareersGrid(); // Build the dynamic careers grid
-            buildInternshipsGrid(); // ### FIX: Call the new function ###
+            buildInternshipsGrid(); 
+            buildTeamSection(); // ### NEW: Build Team Cards ###
+            setupScrollToTop(); // ### NEW: Initialize Scroll Button ###
+            setupQuoteRotation(); // ### NEW: Initialize Quote Rotation ###
 
             // --- New Router Setup ---
             window.addEventListener('hashchange', handleHashChange); // Listen for hash changes
             handleHashChange(); // Run on initial load to check the URL
-
-            // --- NEW: Header Scroll Listener (REMOVED) ---
-            // window.addEventListener('scroll', updateHeaderStyle); 
         };
 
     </script>
