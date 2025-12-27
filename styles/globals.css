@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Canvas container for 3D background */
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+}
+
+/* Glassmorphism effect for cards */
+.glass-card {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* Career/Team card hover effects */
+.career-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.career-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 40px rgba(6, 182, 212, 0.5);
+}
+
+.career-card img {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
+/* Mountain Parallax Styles */
+@keyframes parallax_fg {
+  0% { background-position: 2765px 100%; }
+  100% { background-position: 550px 100%; }
+}
+
+@keyframes parallax_bike {
+  0% { background-position: -300px 100%; }
+  100% { background-position: 2000px 100%; }
+}
+
+.hero-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: linear-gradient(180deg, #cce7ff 0%, #79b7ff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.parallax-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-position: 0 100%;
+  animation: parallax_fg linear infinite;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem;
+}
+
+.hero-title {
+  color: #0f172a;
+}
+
+.hero-subtitle {
+  color: #1e293b;
+}
+
+/* Dynamic Layers */
+.layer-6 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/6.png);
+  animation-duration: 120s;
+  background-size: auto 222px;
+  z-index: 1;
+}
+
+.layer-5 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/5.png);
+  animation-duration: 95s;
+  background-size: auto 311px;
+  z-index: 1;
+}
+
+.layer-4 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/4.png);
+  animation-duration: 75s;
+  background-size: auto 468px;
+  z-index: 1;
+}
+
+.bike-1 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/bike.png);
+  animation-duration: 10s;
+  background-size: auto 75px;
+  z-index: 2;
+  animation-name: parallax_bike;
+  bottom: 100px;
+  background-repeat: no-repeat;
+}
+
+.bike-2 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/bike.png);
+  animation-duration: 15s;
+  background-size: auto 75px;
+  z-index: 2;
+  animation-name: parallax_bike;
+  bottom: 100px;
+  background-repeat: no-repeat;
+}
+
+.layer-3 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/3.png);
+  animation-duration: 55s;
+  background-size: auto 158px;
+  z-index: 3;
+}
+
+.layer-2 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/2.png);
+  animation-duration: 30s;
+  background-size: auto 145px;
+  z-index: 4;
+}
+
+.layer-1 {
+  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/24650/1.png);
+  animation-duration: 20s;
+  background-size: auto 136px;
+  z-index: 5;
+}
