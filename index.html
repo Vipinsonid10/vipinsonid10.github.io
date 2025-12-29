@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decode Labs - 3D Tech Website</title>
+    <title>Decode Labs - Global Internship Opportunities | decodelabs.tech</title>
+    <meta name="description" content="Discover global internship opportunities in technology, innovation, and business at Decode Labs. Connect with leading companies worldwide and launch your career with hands-on experience.">
     <link rel="icon" type="image/png" href="logo.png">
     
     <!-- 1. Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
@@ -1847,24 +1848,21 @@
 
         // ============================================
         
-        // --- Mock Certificate Database ---
-        const certificateDatabase = {
-            'ID12345': {
-                name: 'Alex Johnson',
-                course: 'Robotics Engineering',
-                duration: '6 Months'
-            },
-            'ID67890': {
-                name: 'Maria Garcia',
-                course: 'AI & Machine Learning',
-                duration: '3 Months'
-            },
-            'ID007': {
-                name: 'James Bond',
-                course: 'Cybersecurity & Threat Analysis',
-                duration: '12 Months'
-            }
-        };
+        // --- Certificate Database (loaded from JSON file) ---
+        let certificateDatabase = {};
+        
+        // Load certificate data from external JSON file
+        fetch('certificates.json')
+            .then(response => response.json())
+            .then(data => {
+                certificateDatabase = data;
+                console.log('Certificate database loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading certificate database:', error);
+                // Fallback to empty database if file can't be loaded
+                certificateDatabase = {};
+            });
 
         let scene, camera, renderer, clock;
         let shapes = [];
@@ -2419,34 +2417,48 @@
             }
 
             // --- Verification Button Logic ---
-            if (verifyBtn) {
-                verifyBtn.addEventListener('click', () => {
-                    if (!certificateInput || !verificationResult) return; 
-                    const inputId = certificateInput.value.trim().toUpperCase();
-                    verificationResult.innerHTML = '';
-                    verificationResult.className = 'mt-4 text-center min-h-[100px]'; // Reset classes
+            // Function to handle verification
+            const handleVerification = () => {
+                if (!certificateInput || !verificationResult) return; 
+                const inputId = certificateInput.value.trim().toUpperCase();
+                verificationResult.innerHTML = '';
+                verificationResult.className = 'mt-4 text-center min-h-[100px]'; // Reset classes
 
-                    if (certificateDatabase.hasOwnProperty(inputId)) {
-                        const data = certificateDatabase[inputId];
-                        verificationResult.classList.add('text-green-400');
-                        verificationResult.innerHTML = `
-                            <h4 class="font-bold text-lg">Verified!</h4>
-                            <p class="text-slate-200"><strong>Name:</strong> ${data.name}</p>
-                            <p class="text-slate-200"><strong>Course:</strong> ${data.course}</p>
-                            <p class"text-slate-200"><strong>Duration:</strong> ${data.duration}</p>
-                        `;
-                    } else if (inputId === '') {
-                        verificationResult.classList.add('text-yellow-400');
-                        verificationResult.innerHTML = `
-                            <h4 class="font-bold text-lg">Input Required</h4>
-                            <p class="text-slate-200">Please enter a Certificate ID.</p>
-                        `;
-                    } else {
-                        verificationResult.classList.add('text-red-400');
-                        verificationResult.innerHTML = `
-                            <h4 class="font-bold text-lg">Not Found</h4>
-                            <p class="text-slate-200">The Certificate ID "${inputId}" is not valid.</p>
-                        `;
+                if (certificateDatabase.hasOwnProperty(inputId)) {
+                    const data = certificateDatabase[inputId];
+                    verificationResult.classList.add('text-green-400');
+                    verificationResult.innerHTML = `
+                        <h4 class="font-bold text-lg">Verified!</h4>
+                        <p class="text-slate-200"><strong>Name:</strong> ${data.name}</p>
+                        <p class="text-slate-200"><strong>Course:</strong> ${data.course}</p>
+                        <p class"text-slate-200"><strong>Duration:</strong> ${data.duration}</p>
+                    `;
+                } else if (inputId === '') {
+                    verificationResult.classList.add('text-yellow-400');
+                    verificationResult.innerHTML = `
+                        <h4 class="font-bold text-lg">Input Required</h4>
+                        <p class="text-slate-200">Please enter a Certificate ID.</p>
+                    `;
+                } else {
+                    verificationResult.classList.add('text-red-400');
+                    verificationResult.innerHTML = `
+                        <h4 class="font-bold text-lg">Not Found</h4>
+                        <p class="text-slate-200">The Certificate ID "${inputId}" is not valid.</p>
+                    `;
+                }
+            };
+
+            // Click event for verify button
+            if (verifyBtn) {
+                verifyBtn.addEventListener('click', handleVerification);
+            }
+
+            // Enter key event for certificate input
+            if (certificateInput) {
+                certificateInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        handleVerification();
                     }
                 });
             }
