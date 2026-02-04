@@ -13,5 +13,15 @@
         "name": "James Bond",
         "course": "Cybersecurity & Threat Analysis",
         "duration": "12 Months"
+    },
+    "DA012607": {
+        "name": "Garima Devi",
+        "Course": "Data Analytics",
+        "Duration": "4-Weeks"
+    },
+    "DM012605":{
+        "name": "Aryan Phadnis",
+        "Course": "Digital Marketing",
+        "Duration": "4-Weeks"
     }
 }
