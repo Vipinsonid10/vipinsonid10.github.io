@@ -16,12 +16,12 @@
     },
     "DA012607": {
         "name": "Garima Devi",
-        "Course": "Data Analytics",
-        "Duration": "4-Weeks"
+        "course": "Data Analytics",
+        "duration": "4-Weeks"
     },
-    "DM012605":{
+    "DM012605": {
         "name": "Aryan Phadnis",
-        "Course": "Digital Marketing",
-        "Duration": "4-Weeks"
+        "course": "Digital Marketing",
+        "duration": "4-Weeks"
     }
 }
