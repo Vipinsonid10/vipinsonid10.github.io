@@ -24,4 +24,19 @@
         "course": "Digital Marketing",
         "duration": "4-Weeks"
     }
+    "FSD012616":{
+        "name": "Omer Jabbar",
+        "course": "Full Stack Delopment",
+        "duration": "4-Weeks"
+    }
+    "DA012618":{
+        "name": "Mitali Rajput",
+        "course": "Data Analytics",
+        "duration": "4-Weeks"
+    }
+    "DA012619":{
+     "name": "Anita K.C",
+        "course": "Data Analytics",
+        "duration": "4-Weeks"
+    }
 }
