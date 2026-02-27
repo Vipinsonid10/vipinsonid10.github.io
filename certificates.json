@@ -1,42 +1,70 @@
+``` json
 {
-    "ID1234": {
-        "name": "Alex Johnson",
-        "course": "Robotics Engineering",
-        "duration": "6 Months"
-    },
-    "ID67890": {
-        "name": "Maria Garcia",
-        "course": "AI & Machine Learning",
-        "duration": "3 Months"
-    },
-    "D10": {
-        "name": "James Bond",
-        "course": "Cybersecurity & Threat Analysis",
-        "duration": "12 Months"
-    },
-    "DA012607": {
-        "name": "Garima Devi",
-        "course": "Data Analytics",
-        "duration": "4-Weeks"
-    },
-    "DM012605": {
-        "name": "Aryan Phadnis",
-        "course": "Digital Marketing",
-        "duration": "4-Weeks"
-    },
-    "FSD012616": {
-        "name": "Omer Jabbar",
-        "course": "Full Stack Development",
-        "duration": "4-Weeks"
-    },
-    "DA012618": {
-        "name": "Mitali Rajput",
-        "course": "Data Analytics",
-        "duration": "4-Weeks"
-    },
-    "DA012619": {
-        "name": "Anita K.C",
-        "course": "Data Analytics",
-        "duration": "4-Weeks"
-    }
+  "ID1234": {
+    "name": "Alex Johnson",
+    "course": "Robotics Engineering",
+    "duration": "6 Months"
+  },
+  "ID67890": {
+    "name": "Maria Garcia",
+    "course": "AI & Machine Learning",
+    "duration": "3 Months"
+  },
+  "D10": {
+    "name": "James Bond",
+    "course": "Cybersecurity & Threat Analysis",
+    "duration": "12 Months"
+  },
+  "DA012607": {
+    "name": "Garima Devi",
+    "course": "Data Analytics",
+    "duration": "4-Weeks"
+  },
+  "DM012605": {
+    "name": "Aryan Phadnis",
+    "course": "Digital Marketing",
+    "duration": "4-Weeks"
+  },
+  "FSD012616": {
+    "name": "Omer Jabbar",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "DA012618": {
+    "name": "Mitali Rajput",
+    "course": "Data Analytics",
+    "duration": "4-Weeks"
+  },
+  "DA012619": {
+    "name": "Anita K.C",
+    "course": "Data Analytics",
+    "duration": "4-Weeks"
+  },
+  "AI022620": {
+    "name": "Srishti sharma",
+    "course": "Artificial intelligence (AI)",
+    "duration": "4-Weeks"
+  },
+  "JP022621": {
+    "name": "Shruti Daulat Lokhande",
+    "course": "Java Programming",
+    "duration": "4-Weeks"
+  },
+  "JP022622": {
+    "name": "VEDANT KEDIA",
+    "course": "Java Programming",
+    "duration": "4-Weeks"
+  },
+  "CC022623": {
+    "name": "Priyanka Raut",
+    "course": "Cloud Computing (AWS / Azure)",
+    "duration": "4-Weeks"
+  },
+  "CC022624": {
+    "name": "Sneha",
+    "course": "Cloud Computing (AWS / Azure)",
+    "duration": "4-Weeks"
+  }
 }
+
+```
