@@ -39,27 +39,32 @@
     "course": "Data Analytics",
     "duration": "4-Weeks"
   },
-  "AI022620": {
+  "DA022620": {
+    "name": "Yash Sharma",
+    "course": "Data Analytics",
+    "duration": "4-Weeks"
+  },
+  "AI022621": {
     "name": "Srishti sharma",
     "course": "Artificial intelligence (AI)",
     "duration": "4-Weeks"
   },
-  "JP022621": {
+  "JP022622": {
     "name": "Shruti Daulat Lokhande",
     "course": "Java Programming",
     "duration": "4-Weeks"
   },
-  "JP022622": {
+  "JP022623": {
     "name": "Vedant Kedia",
     "course": "Java Programming",
     "duration": "4-Weeks"
   },
-  "CC022623": {
+  "CC022624": {
     "name": "Priyanka Raut",
     "course": "Cloud Computing (AWS / Azure)",
     "duration": "4-Weeks"
   },
-  "CC022624": {
+  "CC022625": {
     "name": "Sneha",
     "course": "Cloud Computing (AWS / Azure)",
     "duration": "4-Weeks"
