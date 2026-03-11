@@ -68,5 +68,30 @@
     "name": "Sneha",
     "course": "Cloud Computing (AWS / Azure)",
     "duration": "4-Weeks"
+  },
+  "GA022627": {
+    "name": "Diwakar Jha",
+    "course": "Generative AI",
+    "duration": "4-Weeks"
+  },
+  "FSD022628": {
+    "name": "Asha Chandrakant Patil",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022629": {
+    "name": "Abhishek kumar",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "PP022630": {
+    "name": "Arshata Tupe ",
+    "course": "Python programming",
+    "duration": "4-Weeks"
+  },
+  "FSD022632": {
+    "name": "Sanchi Pawar",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
   }
 }
