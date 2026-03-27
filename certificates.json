@@ -98,5 +98,70 @@
     "name": "Yuvraj Rathod",
     "course": "Data Analytics",
     "duration": "4-Weeks"
+  },
+  "CC022633": {
+    "name": "Varun",
+    "course": "Cloud Computing (AWS / Azure)",
+    "duration": "4-Weeks"
+  },
+  "CC022634": {
+    "name": "Yogesh Gupta",
+    "course": "Cloud Computing (AWS / Azure)",
+    "duration": "4-Weeks"
+  },
+  "PP022635": {
+    "name": "Ganesh Shankar khawale",
+    "course": "Python programming",
+    "duration": "4-Weeks"
+  },
+  "PP022636": {
+    "name": "Pruthviraj Mahadev Manohar",
+    "course": "Python programming",
+    "duration": "4-Weeks"
+  },
+  "PP022637": {
+    "name": "Swapnil Dipak Lagas",
+    "course": "Python programming",
+    "duration": "4-Weeks"
+  },
+  "FD022638": {
+    "name": "Anurag Kumar",
+    "course": "Frontend Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022639": {
+    "name": "Deodatta Abhyuday Pagar",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022640": {
+    "name": "Mohammad Saadat",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022641": {
+    "name": "Jalli Edward Jason",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022642": {
+    "name": "Phani kumar dhulipudi",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "PP022643": {
+    "name": "Siddhesh Mangaldas Sankpal",
+    "course": "Python programming",
+    "duration": "4-Weeks"
+  },
+  "FSD022644": {
+    "name": "Praveen Kumar Kondeti",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
+  },
+  "FSD022645": {
+    "name": "EMANDI NARENDRA",
+    "course": "Full Stack Development",
+    "duration": "4-Weeks"
   }
 }
